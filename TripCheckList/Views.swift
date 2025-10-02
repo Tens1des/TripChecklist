@@ -28,15 +28,23 @@ struct TripsListView: View {
                 
                 // Trips List
                 if appState.trips.filter({ !$0.isArchived }).isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "suitcase")
-                            .font(.system(size: 60))
-                            .foregroundStyle(.secondary)
-                        Text("No trips yet")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        Text("Create your first checklist")
-                            .foregroundStyle(.secondary)
+                    VStack(spacing: 20) {
+                        ZStack {
+                            Circle()
+                                .fill(LinearGradient(colors: [.blue.opacity(0.1), .purple.opacity(0.1)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                .frame(width: 120, height: 120)
+                            Image(systemName: "suitcase")
+                                .font(.system(size: 50))
+                                .foregroundStyle(.blue)
+                        }
+                        VStack(spacing: 8) {
+                            Text("No trips yet")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            Text("Create your first checklist")
+                                .foregroundStyle(.secondary)
+                        }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.vertical, 60)
@@ -61,6 +69,13 @@ struct TripsListView: View {
                 
                 Spacer()
             }
+            .background(
+                LinearGradient(
+                    colors: [.blue.opacity(0.15), .purple.opacity(0.15), .pink.opacity(0.15)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
             .navigationBarHidden(true)
             .sheet(isPresented: $showingNewTrip) {
                 NewTripSheet { title, icon in
@@ -82,7 +97,13 @@ struct TripsListView: View {
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                         .frame(width: 56, height: 56)
-                        .background(Color.blue)
+                        .background(
+                            LinearGradient(
+                                colors: [.blue, .purple],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                         .clipShape(Circle())
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
@@ -118,86 +139,169 @@ struct TripCard: View {
     var onArchive: (() -> Void)? = nil
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Header
+        VStack(alignment: .leading, spacing: 16) {
+            // Header with gradient background
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
-                    HStack(spacing: 8) {
-                        if let icon = trip.iconName {
-                            Image(systemName: icon)
-                                .foregroundColor(.blue)
+                    HStack(spacing: 12) {
+                        ZStack {
+                            Circle()
+                                .fill(LinearGradient(colors: [.blue.opacity(0.1), .purple.opacity(0.1)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                .frame(width: 40, height: 40)
+                            if let icon = trip.iconName {
+                                Image(systemName: icon)
+                                    .foregroundColor(.blue)
+                                    .font(.title3)
+                            }
                         }
-                        Text(trip.title)
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
-                    }
-                    
-                    if let startDate = trip.startDate, let endDate = trip.endDate {
-                        Text(formatDateRange(startDate, endDate))
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(trip.title)
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            
+                            if let startDate = trip.startDate, let endDate = trip.endDate {
+                                Text(formatDateRange(startDate, endDate))
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
                     }
                 }
                 
                 Spacer()
                 
-                HStack(spacing: 10) {
+                HStack(spacing: 8) {
                     // Status Badge
                     Text(trip.status.displayName)
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
-                        .padding(.vertical, 4)
-                        .background(statusColor)
+                        .padding(.vertical, 6)
+                        .background(
+                            LinearGradient(
+                                colors: [statusColor, statusColor.opacity(0.8)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                         .clipShape(Capsule())
 
-                    if let onArchive { Button { onArchive() } label: { Image(systemName: "archivebox").foregroundColor(.blue) } }
-                    if let onDelete { Button(role: .destructive) { onDelete() } label: { Image(systemName: "trash").foregroundColor(.red) } }
-                }
-            }
-            
-            // Progress Bar
-            VStack(spacing: 10) {
-                ProgressView(value: Double(trip.completedItemCount), total: Double(max(trip.totalItemCount, 1)))
-                    .progressViewStyle(LinearProgressViewStyle(tint: progressColor))
-                    .scaleEffect(x: 1, y: 1.8, anchor: .center)
-                
-                HStack(spacing: 16) {
-                    Label("\(trip.completedItemCount)/\(trip.totalItemCount)", systemImage: "checkmark.circle")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    
-                    if trip.totalWeightKg > 0 {
-                        Label(String(format: "%.1f/%.1f кг", trip.packedWeightKg, trip.totalWeightKg), systemImage: "scalemass")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                    if let onArchive { 
+                        Button { onArchive() } label: { 
+                            Image(systemName: "archivebox")
+                                .foregroundColor(.blue)
+                                .font(.title3)
+                        } 
+                    }
+                    if let onDelete { 
+                        Button(role: .destructive) { onDelete() } label: { 
+                            Image(systemName: "trash")
+                                .foregroundColor(.red)
+                                .font(.title3)
+                        } 
                     }
                 }
             }
             
-            // Details
-            HStack(spacing: 16) {
-                Label("\(trip.categoryCount) category", systemImage: "folder")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            // Progress Bar with enhanced design
+            VStack(spacing: 12) {
+                HStack {
+                    Text("Progress")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text("\(Int(Double(trip.completedItemCount) / Double(max(trip.totalItemCount, 1)) * 100))%")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(progressColor)
+                }
                 
-                if trip.totalWeightKg > 0 {
-                    Label(String(format: "%.1f кг / %.1f кг", trip.packedWeightKg, trip.totalWeightKg), systemImage: "scalemass")
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.15))
+                        .frame(height: 8)
+                    
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(
+                            LinearGradient(
+                                colors: [progressColor, progressColor.opacity(0.8)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: CGFloat(trip.completedItemCount) / CGFloat(max(trip.totalItemCount, 1)) * UIScreen.main.bounds.width * 0.7, height: 8)
+                }
+                
+                HStack(spacing: 20) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(progressColor)
+                            .font(.caption)
+                        Text("\(trip.completedItemCount)/\(trip.totalItemCount) items")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    if trip.totalWeightKg > 0 {
+                        HStack(spacing: 6) {
+                            Image(systemName: "scalemass.fill")
+                                .foregroundColor(.orange)
+                                .font(.caption)
+                            Text(String(format: "%.1f/%.1f kg", trip.packedWeightKg, trip.totalWeightKg))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+            }
+            
+            // Details with enhanced styling
+            HStack(spacing: 20) {
+                HStack(spacing: 6) {
+                    Image(systemName: "folder.fill")
+                        .foregroundColor(.blue)
+                        .font(.caption)
+                    Text("\(trip.categoryCount) categories")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
+                
+                if trip.totalWeightKg > 0 {
+                    HStack(spacing: 6) {
+                        Image(systemName: "scalemass.fill")
+                            .foregroundColor(.orange)
+                            .font(.caption)
+                        Text(String(format: "%.1f kg total", trip.totalWeightKg))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
         }
-        .padding(16)
-        .background(Color(UIColor.secondarySystemBackground))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.gray.opacity(0.15), lineWidth: 1)
+        .padding(20)
+        .background(
+            LinearGradient(
+                colors: [Color(UIColor.secondarySystemBackground), Color(UIColor.secondarySystemBackground).opacity(0.8)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         )
-        .clipShape(RoundedRectangle(cornerRadius: 14))
-        .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(
+                    LinearGradient(
+                        colors: [.blue.opacity(0.2), .purple.opacity(0.2)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
     }
     
     private var statusColor: Color {
@@ -1188,20 +1292,65 @@ struct HistoryView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Header
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("History")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
+                // Header with gradient and statistics
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("History")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        
+                        Text("Your completed trips")
+                            .font(.subheadline)
+                            .foregroundColor(.white.opacity(0.85))
+                    }
                     
-                    Text("Your completed trips")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    // Statistics
+                    HStack(spacing: 32) {
+                        VStack(spacing: 4) {
+                            Text("\(appState.trips.filter { $0.isArchived }.count)")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                            Text("Trips")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                        
+                        VStack(spacing: 4) {
+                            Text("\(appState.trips.filter { $0.isArchived }.reduce(0) { $0 + $1.totalItemCount })")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                            Text("Items")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                        
+                        VStack(spacing: 4) {
+                            Text("\(appState.trips.filter { $0.isArchived }.count)")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                            Text("Awards")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 20)
-                .padding(.top, 10)
+                .padding(.vertical, 24)
+                .background(
+                    LinearGradient(
+                        colors: [.blue, .purple],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .clipShape(
+                    .rect(topLeadingRadius: 0, bottomLeadingRadius: 24, bottomTrailingRadius: 24, topTrailingRadius: 0)
+                )
                 
                 if appState.trips.filter({ $0.isArchived }).isEmpty {
                     VStack(spacing: 16) {
@@ -1235,6 +1384,13 @@ struct HistoryView: View {
                 
                 Spacer()
             }
+            .background(
+                LinearGradient(
+                    colors: [.blue.opacity(0.15), .purple.opacity(0.15), .pink.opacity(0.15)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
             .navigationBarHidden(true)
         }
     }
@@ -1245,37 +1401,121 @@ struct HistoryCard: View {
     let onDuplicate: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header with title and country code/icon
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 6) {
                     Text(trip.title)
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
                     
-                    Text("Completed: \(trip.completedItemCount)/\(trip.totalItemCount)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    if let startDate = trip.startDate, let endDate = trip.endDate {
+                        Text(formatDateRange(startDate, endDate))
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
                 Spacer()
                 
-                Button("Duplicate") {
-                    onDuplicate()
+                // Country code or icon
+                Text(getCountryCode(for: trip.title))
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.blue)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.blue.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+            }
+            
+            // Packing details
+            HStack(spacing: 24) {
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                        .font(.caption)
+                    Text("\(trip.completedItemCount)/\(trip.totalItemCount)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .foregroundColor(.blue)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(Color.blue.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                
+                HStack(spacing: 6) {
+                    Image(systemName: "calendar")
+                        .foregroundColor(.blue)
+                        .font(.caption)
+                    Text("\(getTripDuration()) days")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                if trip.totalWeightKg > 0 {
+                    HStack(spacing: 6) {
+                        Image(systemName: "scalemass.fill")
+                            .foregroundColor(.orange)
+                            .font(.caption)
+                        Text(String(format: "%.0f kg", trip.totalWeightKg))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            
+            // Completion status
+            HStack {
+                Text("100% packed")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.green)
+                Spacer()
             }
         }
         .padding(16)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 2)
+    }
+    
+    private func getCountryCode(for title: String) -> String {
+        switch title.lowercased() {
+        case let t where t.contains("paris") || t.contains("франция") || t.contains("париж"):
+            return "FR"
+        case let t where t.contains("sochi") || t.contains("сочи"):
+            return "🏖️"
+        case let t where t.contains("petersburg") || t.contains("петербург"):
+            return "🏛️"
+        case let t where t.contains("dubai") || t.contains("дубай"):
+            return "AE"
+        case let t where t.contains("moscow") || t.contains("москва"):
+            return "RU"
+        case let t where t.contains("london") || t.contains("лондон"):
+            return "GB"
+        case let t where t.contains("tokyo") || t.contains("токио"):
+            return "JP"
+        case let t where t.contains("new york") || t.contains("нью-йорк"):
+            return "US"
+        default:
+            return "🌍"
+        }
+    }
+    
+    private func getTripDuration() -> Int {
+        guard let startDate = trip.startDate, let endDate = trip.endDate else { return 0 }
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.day], from: startDate, to: endDate)
+        return max(1, components.day ?? 1)
+    }
+    
+    private func formatDateRange(_ start: Date, _ end: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.dateFormat = "d MMMM yyyy"
+        
+        let startString = formatter.string(from: start)
+        let endString = formatter.string(from: end)
+        
+        return "\(startString) - \(endString)"
     }
 }
 
@@ -1288,29 +1528,63 @@ struct AchievementsView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Header
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Achievements")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
-                    
-                    Text("Collected \(achievementService.unlockedAchievements.count) of \(AchievementDefinition.all.count) awards")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                // Header with enhanced design
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Achievements")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundColor(.primary)
+                            
+                            Text("Collected \(achievementService.unlockedAchievements.count) of \(AchievementDefinition.all.count) awards")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        ZStack {
+                            Circle()
+                                .fill(LinearGradient(colors: [.blue.opacity(0.1), .purple.opacity(0.1)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                .frame(width: 50, height: 50)
+                            Image(systemName: "star.fill")
+                                .foregroundColor(.blue)
+                                .font(.title2)
+                        }
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 20)
                 .padding(.top, 10)
                 
-                // Progress Bar
-                VStack(spacing: 8) {
-                    ProgressView(
-                        value: Double(achievementService.unlockedAchievements.count),
-                        total: Double(AchievementDefinition.all.count)
-                    )
-                    .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-                    .scaleEffect(x: 1, y: 1.5, anchor: .center)
+                // Enhanced Progress Section
+                VStack(spacing: 12) {
+                    HStack {
+                        Text("Progress")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("\(Int(Double(achievementService.unlockedAchievements.count) / Double(AchievementDefinition.all.count) * 100))%")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.blue)
+                    }
+                    
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.15))
+                            .frame(height: 8)
+                        
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(
+                                LinearGradient(
+                                    colors: [.blue, .purple],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .frame(width: CGFloat(achievementService.unlockedAchievements.count) / CGFloat(AchievementDefinition.all.count) * UIScreen.main.bounds.width * 0.7, height: 8)
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
@@ -1332,6 +1606,13 @@ struct AchievementsView: View {
                 
                 Spacer()
             }
+            .background(
+                LinearGradient(
+                    colors: [.blue.opacity(0.15), .purple.opacity(0.15), .pink.opacity(0.15)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
             .navigationBarHidden(true)
             .alert("New achievement!", isPresented: .constant(showingNewAchievement != nil)) {
                 Button("OK") { showingNewAchievement = nil }
@@ -1388,35 +1669,74 @@ struct AchievementBlock: View {
     let definition: AchievementDefinition
     let isUnlocked: Bool
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: definition.iconName)
-                    .font(.title2)
-                    .foregroundStyle(isUnlocked ? definition.color : .secondary)
-                    .frame(width: 36, height: 36)
-                    .background((isUnlocked ? definition.color : .gray).opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: isUnlocked ? [definition.color.opacity(0.15), definition.color.opacity(0.25)] : [Color.gray.opacity(0.1), Color.gray.opacity(0.15)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 40, height: 40)
+                    Image(systemName: definition.iconName)
+                        .font(.title3)
+                        .foregroundStyle(isUnlocked ? definition.color : .secondary)
+                }
                 Spacer()
                 if isUnlocked {
-                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .font(.title3)
+                } else {
+                    Image(systemName: "lock.fill")
+                        .foregroundStyle(.gray.opacity(0.5))
+                        .font(.caption)
                 }
             }
-            Text(definition.title)
-                .font(.headline)
-                .fontWeight(.semibold)
-                .foregroundStyle(isUnlocked ? .primary : .secondary)
-                .lineLimit(2)
-            Text(definition.description)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
+            
+            VStack(alignment: .leading, spacing: 6) {
+                Text(definition.title)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(isUnlocked ? .primary : .secondary)
+                    .lineLimit(2)
+                
+                Text(definition.description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+            }
         }
-        .padding(14)
-        .frame(maxWidth: .infinity, minHeight: 120, alignment: .topLeading)
-        .background(Color.white)
+        .padding(16)
+        .frame(maxWidth: .infinity, minHeight: 130, alignment: .topLeading)
+        .background(
+            LinearGradient(
+                colors: isUnlocked ? 
+                    [Color(UIColor.secondarySystemBackground), Color(UIColor.secondarySystemBackground).opacity(0.8)] :
+                    [Color.gray.opacity(0.05), Color.gray.opacity(0.1)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(
+                    LinearGradient(
+                        colors: isUnlocked ? 
+                            [definition.color.opacity(0.3), definition.color.opacity(0.1)] :
+                            [Color.gray.opacity(0.1), Color.gray.opacity(0.05)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
-        .opacity(isUnlocked ? 1.0 : 0.6)
+        .shadow(color: isUnlocked ? definition.color.opacity(0.1) : Color.black.opacity(0.04), radius: isUnlocked ? 8 : 4, x: 0, y: 2)
+        .opacity(isUnlocked ? 1.0 : 0.7)
     }
 }
 
@@ -1433,7 +1753,6 @@ struct SettingsView: View {
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(.primary)
-                    
                     Text("App personalization")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -1444,73 +1763,76 @@ struct SettingsView: View {
                 
                 ScrollView {
                     VStack(spacing: 24) {
-                        // Profile Section
+                        // Profile Card
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Profile")
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.primary)
-                            
+                            HStack(alignment: .center, spacing: 16) {
+                                ZStack {
+                                    Circle()
+                                        .fill(LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                        .frame(width: 64, height: 64)
+                                    Image(systemName: appState.settings.avatarSymbolName)
+                                        .foregroundColor(.white)
+                                        .font(.title2)
+                                }
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Profile")
+                                        .font(.headline)
+                                    TextField("Enter name", text: Binding(get: { appState.settings.displayName }, set: { appState.settings.displayName = $0 }))
+                                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                                }
+                            }
+
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Choose avatar")
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
-                                
-                                HStack(spacing: 12) {
-                                    ForEach(["suitcase", "airplane", "backpack", "globe.europe.africa"], id: \.self) { icon in
-                                        Button {
-                                            appState.settings.avatarSymbolName = icon
-                                        } label: {
-                                            Image(systemName: icon)
-                                                .font(.title2)
-                                                .foregroundColor(appState.settings.avatarSymbolName == icon ? .white : .primary)
-                                                .frame(width: 50, height: 50)
-                                                .background(appState.settings.avatarSymbolName == icon ? Color.blue : Color.gray.opacity(0.15))
-                                                .clipShape(Circle())
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 12) {
+                                        ForEach(["suitcase", "airplane", "backpack", "globe.europe.africa", "tram.fill", "tent", "car", "camera"], id: \.self) { icon in
+                                            Button {
+                                                appState.settings.avatarSymbolName = icon
+                                            } label: {
+                                                Image(systemName: icon)
+                                                    .font(.title2)
+                                                    .foregroundColor(appState.settings.avatarSymbolName == icon ? .white : .primary)
+                                                    .frame(width: 50, height: 50)
+                                                    .background(appState.settings.avatarSymbolName == icon ? Color.blue : Color(UIColor.secondarySystemBackground))
+                                                    .clipShape(Circle())
+                                                    .overlay(
+                                                        Circle().stroke(appState.settings.avatarSymbolName == icon ? Color.blue.opacity(0.001) : Color.gray.opacity(0.15), lineWidth: 1)
+                                                    )
+                                            }
                                         }
                                     }
                                 }
                             }
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("User name")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                
-                                TextField("Enter name", text: Binding(get: { appState.settings.displayName }, set: { appState.settings.displayName = $0 }))
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                            }
                         }
-                        .padding(20)
-                        .background(Color(UIColor.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
+                        .modifier(SettingsCardStyle())
                         
                         // Appearance Section
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Appearance")
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.primary)
+                            HStack(spacing: 8) {
+                                Image(systemName: "paintbrush.fill").foregroundColor(.blue)
+                                Text("Appearance").font(.headline)
+                            }
                             
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Theme")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Theme").font(.subheadline).foregroundColor(.secondary)
                                 Picker("Theme", selection: Binding(get: { appState.settings.theme }, set: { appState.settings.theme = $0 })) {
                                     Text("System").tag(UserSettings.Theme.system)
                                     Text("Light").tag(UserSettings.Theme.light)
                                     Text("Dark").tag(UserSettings.Theme.dark)
                                 }
                                 .pickerStyle(SegmentedPickerStyle())
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("App language")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
                                 
+                                ThemePreview(theme: appState.settings.theme)
+                                    .frame(height: 80)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.15), lineWidth: 1))
+                            }
+
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("App language").font(.subheadline).foregroundColor(.secondary)
                                 Picker("Language", selection: Binding(get: { appState.settings.language }, set: { appState.settings.language = $0 })) {
                                     Text("English").tag(UserSettings.AppLanguage.english)
                                     Text("Russian").tag(UserSettings.AppLanguage.russian)
@@ -1518,25 +1840,22 @@ struct SettingsView: View {
                                 }
                                 .pickerStyle(MenuPickerStyle())
                             }
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Text size")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                
-                                Slider(value: Binding(get: { appState.settings.textScale }, set: { appState.settings.textScale = $0 }), in: 0.9...1.3) {
-                                    Text("Text size")
+
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Text size").font(.subheadline).foregroundColor(.secondary)
+                                HStack {
+                                    Image(systemName: "textformat.size.smaller")
+                                        .foregroundColor(.secondary)
+                                    Slider(value: Binding(get: { appState.settings.textScale }, set: { appState.settings.textScale = $0 }), in: 0.9...1.3)
+                                    Image(systemName: "textformat.size.larger")
+                                        .foregroundColor(.secondary)
                                 }
-                                
-                                Text("Medium")
+                                Text(appState.settings.textScale < 0.95 ? "Small" : (appState.settings.textScale < 1.1 ? "Medium" : "Large"))
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                         }
-                        .padding(20)
-                        .background(Color(UIColor.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
+                        .modifier(SettingsCardStyle())
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 16)
@@ -1544,8 +1863,53 @@ struct SettingsView: View {
                 
                 Spacer()
             }
+            .background(
+                LinearGradient(
+                    colors: [.blue.opacity(0.1), .purple.opacity(0.1)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
             .navigationBarHidden(true)
         }
+    }
+}
+
+// MARK: - Settings helpers
+
+private struct SettingsCardStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .padding(20)
+            .background(Color(UIColor.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12).stroke(Color.gray.opacity(0.15), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+    }
+}
+
+private struct ThemePreview: View {
+    let theme: UserSettings.Theme
+    var body: some View {
+        HStack(spacing: 0) {
+            Rectangle().fill(Color(UIColor.systemBackground))
+                .overlay(
+                    VStack(alignment: .leading, spacing: 6) {
+                        RoundedRectangle(cornerRadius: 4).fill(Color.blue).frame(width: 60, height: 8)
+                        RoundedRectangle(cornerRadius: 4).fill(Color.gray.opacity(0.3)).frame(width: 120, height: 8)
+                        HStack(spacing: 6) {
+                            ForEach(0..<3) { _ in
+                                RoundedRectangle(cornerRadius: 6).fill(Color.gray.opacity(0.2))
+                            }
+                        }
+                    }
+                    .padding(10)
+                )
+            Rectangle().fill(Color(UIColor.secondarySystemBackground))
+        }
+        .preferredColorScheme(theme == .light ? .light : (theme == .dark ? .dark : nil))
     }
 }
 
