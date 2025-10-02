@@ -1,0 +1,77 @@
+/* 
+  Localizable.strings (Russian)
+  TripCheckList
+
+  Created by Рома Котов on 02.10.2025.
+*/
+
+// MARK: - Common
+"Cancel" = "Отмена";
+"Done" = "Готово";
+"Save" = "Сохранить";
+"Add" = "Добавить";
+"Delete" = "Удалить";
+"Edit" = "Редактировать";
+"Create" = "Создать";
+"Remaining" = "Осталось";
+
+// MARK: - Tabs
+"Lists" = "Списки";
+"History" = "История";
+"Awards" = "Награды";
+"Settings" = "Настройки";
+
+// MARK: - Trips
+"Trips" = "Поездки";
+"New Trip" = "Новая поездка";
+"Trip name" = "Название поездки";
+"Untitled" = "Без названия";
+"No trips yet" = "Поездок пока нет";
+"Create your first checklist" = "Создайте свой первый чеклист";
+"Archive" = "Архив";
+
+// MARK: - Items
+"Add Item" = "Добавить вещь";
+"Edit Item" = "Редактировать вещь";
+"Item name" = "Название вещи";
+"Item" = "Вещь";
+"Note (optional)" = "Заметка (необязательно)";
+"Category" = "Категория";
+"Categories" = "Категории";
+"Add Category" = "Добавить категорию";
+"Category name" = "Название категории";
+"New Category" = "Новая категория";
+"Importance" = "Важность";
+"Low" = "Низкая";
+"Medium" = "Средняя";
+"High" = "Высокая";
+"Weight (kg)" = "Вес (кг)";
+
+// MARK: - Categories
+"Documents" = "Документы";
+"Clothes" = "Одежда";
+"Hygiene" = "Гигиена";
+"Electronics" = "Электроника";
+
+// MARK: - History
+"Completed" = "Завершено";
+"Duplicate" = "Дублировать";
+
+// MARK: - Achievements
+"Achievements will appear here" = "Достижения появятся здесь";
+
+// MARK: - Settings
+"Profile" = "Профиль";
+"Name" = "Имя";
+"Avatar" = "Аватар";
+"Appearance" = "Внешний вид";
+"Theme" = "Тема";
+"System" = "Системная";
+"Light" = "Светлая";
+"Dark" = "Тёмная";
+"Text Size" = "Размер текста";
+"Language" = "Язык";
+"English" = "Английский";
+"Russian" = "Русский";
+"Spanish" = "Испанский";
+

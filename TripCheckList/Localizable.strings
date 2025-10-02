@@ -1,0 +1,77 @@
+/* 
+  Localizable.strings
+  TripCheckList
+
+  Created by Рома Котов on 02.10.2025.
+*/
+
+// MARK: - Common
+"Cancel" = "Cancel";
+"Done" = "Done";
+"Save" = "Save";
+"Add" = "Add";
+"Delete" = "Delete";
+"Edit" = "Edit";
+"Create" = "Create";
+"Remaining" = "Remaining";
+
+// MARK: - Tabs
+"Lists" = "Lists";
+"History" = "History";
+"Awards" = "Awards";
+"Settings" = "Settings";
+
+// MARK: - Trips
+"Trips" = "Trips";
+"New Trip" = "New Trip";
+"Trip name" = "Trip name";
+"Untitled" = "Untitled";
+"No trips yet" = "No trips yet";
+"Create your first checklist" = "Create your first checklist";
+"Archive" = "Archive";
+
+// MARK: - Items
+"Add Item" = "Add Item";
+"Edit Item" = "Edit Item";
+"Item name" = "Item name";
+"Item" = "Item";
+"Note (optional)" = "Note (optional)";
+"Category" = "Category";
+"Categories" = "Categories";
+"Add Category" = "Add Category";
+"Category name" = "Category name";
+"New Category" = "New Category";
+"Importance" = "Importance";
+"Low" = "Low";
+"Medium" = "Medium";
+"High" = "High";
+"Weight (kg)" = "Weight (kg)";
+
+// MARK: - Categories
+"Documents" = "Documents";
+"Clothes" = "Clothes";
+"Hygiene" = "Hygiene";
+"Electronics" = "Electronics";
+
+// MARK: - History
+"Completed" = "Completed";
+"Duplicate" = "Duplicate";
+
+// MARK: - Achievements
+"Achievements will appear here" = "Achievements will appear here";
+
+// MARK: - Settings
+"Profile" = "Profile";
+"Name" = "Name";
+"Avatar" = "Avatar";
+"Appearance" = "Appearance";
+"Theme" = "Theme";
+"System" = "System";
+"Light" = "Light";
+"Dark" = "Dark";
+"Text Size" = "Text Size";
+"Language" = "Language";
+"English" = "English";
+"Russian" = "Russian";
+"Spanish" = "Spanish";
+
