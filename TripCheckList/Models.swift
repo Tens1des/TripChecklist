@@ -32,6 +32,7 @@ struct Trip: Identifiable, Codable, Equatable {
     var items: [TripItem]
     var isArchived: Bool
     var status: Status
+    var iconName: String?
 
     init(
         id: UUID = UUID(),
@@ -40,7 +41,8 @@ struct Trip: Identifiable, Codable, Equatable {
         endDate: Date? = nil,
         items: [TripItem] = [],
         isArchived: Bool = false,
-        status: Status = .new
+        status: Status = .new,
+        iconName: String? = nil
     ) {
         self.id = id
         self.title = title
@@ -49,6 +51,7 @@ struct Trip: Identifiable, Codable, Equatable {
         self.items = items
         self.isArchived = isArchived
         self.status = status
+        self.iconName = iconName
     }
 
     var completedItemCount: Int {

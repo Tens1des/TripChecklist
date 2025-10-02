@@ -63,8 +63,8 @@ struct TripsListView: View {
             }
             .navigationBarHidden(true)
             .sheet(isPresented: $showingNewTrip) {
-                NewTripSheet { title in
-                    let newTrip = Trip(title: title)
+                NewTripSheet { title, icon in
+                    let newTrip = Trip(title: title, iconName: icon)
                     appState.trips.append(newTrip)
                 }
             }
@@ -121,11 +121,17 @@ struct TripCard: View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(trip.title)
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 8) {
+                        if let icon = trip.iconName {
+                            Image(systemName: icon)
+                                .foregroundColor(.blue)
+                        }
+                        Text(trip.title)
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
+                    }
                     
                     if let startDate = trip.startDate, let endDate = trip.endDate {
                         Text(formatDateRange(startDate, endDate))
@@ -153,10 +159,10 @@ struct TripCard: View {
             }
             
             // Progress Bar
-            VStack(spacing: 8) {
+            VStack(spacing: 10) {
                 ProgressView(value: Double(trip.completedItemCount), total: Double(max(trip.totalItemCount, 1)))
                     .progressViewStyle(LinearProgressViewStyle(tint: progressColor))
-                    .scaleEffect(x: 1, y: 1.5, anchor: .center)
+                    .scaleEffect(x: 1, y: 1.8, anchor: .center)
                 
                 HStack(spacing: 16) {
                     Label("\(trip.completedItemCount)/\(trip.totalItemCount)", systemImage: "checkmark.circle")
@@ -185,9 +191,13 @@ struct TripCard: View {
             }
         }
         .padding(16)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+        .background(Color(UIColor.secondarySystemBackground))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(Color.gray.opacity(0.15), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
     
     private var statusColor: Color {
@@ -238,7 +248,7 @@ struct TripRow: View {
 }
 
 struct NewTripSheet: View {
-    var onCreate: (String) -> Void
+    var onCreate: (String, String?) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var title: String = ""
     @State private var selectedIcon: String = "airplane"
@@ -251,25 +261,32 @@ struct NewTripSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    // Header
+                    // Header with gradient
                     HStack {
                         Button("Cancel") { dismiss() }
-                            .foregroundColor(.blue)
+                            .foregroundColor(.white)
                         Spacer()
                         Text("New trip")
                             .font(.headline)
                             .fontWeight(.semibold)
+                            .foregroundColor(.white)
                         Spacer()
                         Button("Create") {
-                            onCreate(title.isEmpty ? "New trip" : title)
+                            onCreate(title.isEmpty ? "New trip" : title, selectedIcon)
                             dismiss()
                         }
-                        .foregroundColor(.blue)
+                        .foregroundColor(.white)
                         .fontWeight(.semibold)
                         .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
                     .padding(.horizontal, 20)
-                    .padding(.top, 10)
+                    .padding(.vertical, 14)
+                    .background(
+                        LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    )
+                    .clipShape(
+                        .rect(topLeadingRadius: 0, bottomLeadingRadius: 16, bottomTrailingRadius: 16, topTrailingRadius: 0)
+                    )
                     
                     VStack(alignment: .leading, spacing: 20) {
                         // Trip Name
@@ -297,7 +314,7 @@ struct NewTripSheet: View {
                                             .font(.title2)
                                             .foregroundColor(selectedIcon == icon ? .white : .primary)
                                             .frame(width: 40, height: 40)
-                                            .background(selectedIcon == icon ? Color.blue : Color.gray.opacity(0.1))
+                                            .background(selectedIcon == icon ? Color.blue : Color(UIColor.secondarySystemBackground))
                                             .clipShape(RoundedRectangle(cornerRadius: 8))
                                     }
                                 }
@@ -876,14 +893,15 @@ struct AddItemSheet: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Header
+                // Header with gradient
                 HStack {
                     Button("Cancel") { dismiss() }
-                        .foregroundColor(.blue)
+                        .foregroundColor(.white)
                     Spacer()
                     Text("Add item")
                         .font(.headline)
                         .fontWeight(.semibold)
+                        .foregroundColor(.white)
                     Spacer()
                     Button("Add") {
                         let weight = Double(weightText.replacingOccurrences(of: ",", with: "."))
@@ -898,12 +916,18 @@ struct AddItemSheet: View {
                         onAdd(item)
                         dismiss()
                     }
-                    .foregroundColor(.blue)
+                    .foregroundColor(.white)
                     .fontWeight(.semibold)
                     .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 10)
+                .padding(.vertical, 14)
+                .background(
+                    LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
+                )
+                .clipShape(
+                    .rect(topLeadingRadius: 0, bottomLeadingRadius: 16, bottomTrailingRadius: 16, topTrailingRadius: 0)
+                )
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
