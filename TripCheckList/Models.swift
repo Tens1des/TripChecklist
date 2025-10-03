@@ -135,8 +135,20 @@ struct TripCategory: Identifiable, Codable, Equatable, Hashable {
 
     static let documents = TripCategory(name: "Documents", system: true, iconName: "doc.text")
     static let clothes = TripCategory(name: "Clothes", system: true, iconName: "tshirt")
-    static let hygiene = TripCategory(name: "Hygiene", system: true, iconName: "bandage")
+    static let hygiene = TripCategory(name: "Hygiene", system: true, iconName: "sparkles")
     static let electronics = TripCategory(name: "Electronics", system: true, iconName: "bolt")
+    
+    func localizedName(language: UserSettings.AppLanguage) -> String {
+        switch self.name {
+        case "Documents": return LocalizedString.localized("category.documents", language: language)
+        case "Clothes": return LocalizedString.localized("category.clothes", language: language)
+        case "Hygiene": return LocalizedString.localized("category.hygiene", language: language)
+        case "Electronics": return LocalizedString.localized("category.electronics", language: language)
+        case "Medication": return LocalizedString.localized("category.medication", language: language)
+        case "Other": return LocalizedString.localized("category.other", language: language)
+        default: return self.name
+        }
+    }
 }
 
 struct UserSettings: Codable, Equatable {

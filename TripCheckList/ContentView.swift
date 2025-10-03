@@ -14,22 +14,22 @@ struct ContentView: View {
         TabView {
             TripsListView()
                 .tabItem {
-                    Label("Lists", systemImage: "checklist")
+                    Label(LocalizedString.localized("tab.lists", language: appState.settings.language), systemImage: "checklist")
                 }
 
             HistoryView()
                 .tabItem {
-                    Label("History", systemImage: "clock")
+                    Label(LocalizedString.localized("tab.history", language: appState.settings.language), systemImage: "clock")
                 }
 
             AchievementsView()
                 .tabItem {
-                    Label("Awards", systemImage: "star")
+                    Label(LocalizedString.localized("tab.awards", language: appState.settings.language), systemImage: "star")
                 }
 
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gear")
+                    Label(LocalizedString.localized("tab.settings", language: appState.settings.language), systemImage: "gear")
                 }
         }
         .environment(\.sizeCategory, sizeCategoryFromScale(appState.settings.textScale))

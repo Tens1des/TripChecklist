@@ -24,7 +24,7 @@ extension AchievementDefinition {
         AchievementDefinition(id: 9, title: "Seasonal Traveler", description: "Create checklists for 4 seasons", iconName: "leaf", color: .mint),
         AchievementDefinition(id: 10, title: "No Panic", description: "Complete on the day of departure", iconName: "clock.fill", color: .red),
         AchievementDefinition(id: 11, title: "Everything Under Control", description: "Complete a week before departure", iconName: "calendar.badge.checkmark", color: .green),
-        AchievementDefinition(id: 12, title: "Global Tourist", description: "Use the app in two languages", iconName: "character.cursor.ibeam", color: .blue),
+        AchievementDefinition(id: 12, title: "Global Tourist", description: "Use the app in two languages", iconName: "globe.americas", color: .blue),
         AchievementDefinition(id: 13, title: "Note Master", description: "Add your first note", iconName: "pencil", color: .orange),
         AchievementDefinition(id: 14, title: "Checklist Pro", description: "Create 20 trip checklists", iconName: "trophy.fill", color: .yellow),
         AchievementDefinition(id: 15, title: "Road Legend", description: "Complete 50 checklists", iconName: "crown.fill", color: .purple)

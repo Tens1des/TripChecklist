@@ -1,0 +1,447 @@
+import Foundation
+
+// MARK: - Localization System
+
+struct LocalizedString {
+    static func localized(_ key: String, language: UserSettings.AppLanguage = .english) -> String {
+        let strings = LocalizedStrings.all[language] ?? LocalizedStrings.all[.english]!
+        return strings[key] ?? key
+    }
+}
+
+struct LocalizedStrings {
+    static let all: [UserSettings.AppLanguage: [String: String]] = [
+        .english: englishStrings,
+        .russian: russianStrings,
+        .spanish: spanishStrings
+    ]
+    
+    // MARK: - English Strings
+    private static let englishStrings: [String: String] = [
+        // Tab Bar
+        "tab.lists": "Lists",
+        "tab.history": "History", 
+        "tab.awards": "Awards",
+        "tab.settings": "Settings",
+        
+        // Main Screen
+        "main.title": "My Trips",
+        "main.empty": "No trips yet",
+        "main.empty.subtitle": "Create your first trip to get started",
+        "main.create": "Create Trip",
+        "main.archive": "Archive",
+        "main.delete": "Delete",
+        "main.delete.confirm": "Delete Trip",
+        "main.delete.message": "Are you sure you want to delete this trip? This action cannot be undone.",
+        "main.delete.cancel": "Cancel",
+        "main.delete.delete": "Delete",
+        
+        // Trip Card
+        "trip.progress": "Progress",
+        "trip.items": "items",
+        "trip.categories": "categories",
+        "trip.weight": "kg",
+        "trip.status.new": "New",
+        "trip.status.in_progress": "In progress", 
+        "trip.status.ready": "Ready",
+        
+        // New Trip Sheet
+        "new_trip.title": "New Trip",
+        "new_trip.cancel": "Cancel",
+        "new_trip.create": "Create",
+        "new_trip.name": "Trip Name",
+        "new_trip.name.placeholder": "For example: Vacation in Paris",
+        "new_trip.icon": "Choose Icon",
+        "new_trip.dates": "Trip dates",
+        "new_trip.start_date": "Start date",
+        "new_trip.end_date": "End date",
+        "new_trip.type": "Trip Type",
+        "new_trip.type.leisure": "Leisure",
+        "new_trip.type.work": "Work",
+        "new_trip.type.adventure": "Adventure",
+        "new_trip.type.family": "Family",
+        
+        // Trip Detail
+        "trip_detail.packing_progress": "Packing progress",
+        "trip_detail.items_packed": "items packed",
+        "trip_detail.all_items": "All items",
+        "trip_detail.remaining": "Remaining",
+        "trip_detail.add_item": "Add item",
+        
+        // Add Item Sheet
+        "add_item.title": "Add Item",
+        "add_item.cancel": "Cancel",
+        "add_item.add": "Add",
+        "add_item.quick_add": "Quick add",
+        "add_item.create_own": "Or create your own",
+        "add_item.name": "Item Name",
+        "add_item.name.placeholder": "For example: Toothbrush",
+        "add_item.category": "Category",
+        "add_item.importance": "Importance",
+        "add_item.importance.low": "Low",
+        "add_item.importance.medium": "Medium",
+        "add_item.importance.high": "High",
+        "add_item.weight": "Weight and quantity",
+        "add_item.weight.kg": "kg",
+        "add_item.note": "Note (optional)",
+        "add_item.note.placeholder": "Additional information or reminder",
+        "add_item.quantity": "Quantity",
+        
+        // Categories
+        "category.documents": "Documents",
+        "category.clothes": "Clothes",
+        "category.hygiene": "Hygiene",
+        "category.electronics": "Electronics",
+        "category.medication": "Medication",
+        "category.other": "Other",
+        
+        // History
+        "history.title": "History",
+        "history.subtitle": "Your completed trips",
+        "history.stats.trips": "Trips",
+        "history.stats.items": "Items", 
+        "history.stats.awards": "Awards",
+        "history.empty": "No history yet",
+        "history.empty.subtitle": "Completed trips will appear here",
+        "history.packed": "100% packed",
+        
+        // Achievements
+        "achievements.title": "Achievements",
+        "achievements.subtitle": "Collected X of Y awards",
+        "achievements.progress": "Progress",
+        "achievements.first_suitcase": "First Suitcase",
+        "achievements.first_suitcase.desc": "Create your first trip checklist",
+        "achievements.nothing_forgotten": "Nothing Forgotten",
+        "achievements.nothing_forgotten.desc": "Check off all items in one trip",
+        "achievements.light_backpack": "Light Backpack",
+        "achievements.light_backpack.desc": "Create a checklist with < 5 items",
+        "achievements.packed_house": "Packed the Whole House",
+        "achievements.packed_house.desc": "Create a checklist with > 30 items",
+        "achievements.weekend_traveler": "Weekend Traveler",
+        "achievements.weekend_traveler.desc": "Complete a 1–2 day trip checklist",
+        "achievements.packing_master": "Packing Master",
+        "achievements.packing_master.desc": "Complete 5 different trips",
+        "achievements.experienced_tourist": "Experienced Tourist",
+        "achievements.experienced_tourist.desc": "Complete 10 different trips",
+        "achievements.baggage_organizer": "Baggage Organizer",
+        "achievements.baggage_organizer.desc": "Add notes to 10 items",
+        "achievements.seasonal_traveler": "Seasonal Traveler",
+        "achievements.seasonal_traveler.desc": "Create checklists for 4 seasons",
+        "achievements.no_panic": "No Panic",
+        "achievements.no_panic.desc": "Complete on the day of departure",
+        "achievements.under_control": "Everything Under Control",
+        "achievements.under_control.desc": "Complete a week before departure",
+        "achievements.global_tourist": "Global Tourist",
+        "achievements.global_tourist.desc": "Use the app in two languages",
+        "achievements.note_master": "Note Master",
+        "achievements.note_master.desc": "Add your first note",
+        "achievements.checklist_pro": "Checklist Pro",
+        "achievements.checklist_pro.desc": "Create 20 trip checklists",
+        "achievements.road_legend": "Road Legend",
+        "achievements.road_legend.desc": "Complete 50 checklists",
+        
+        // Settings
+        "settings.title": "Settings",
+        "settings.subtitle": "App personalization",
+        "settings.profile": "Profile",
+        "settings.appearance": "Appearance",
+        "settings.theme": "Theme",
+        "settings.theme.system": "System",
+        "settings.theme.light": "Light",
+        "settings.theme.dark": "Dark",
+        "settings.text_size": "Text Size",
+        "settings.text_size.small": "Small",
+        "settings.text_size.medium": "Medium",
+        "settings.text_size.large": "Large",
+        "settings.language": "Language",
+        "settings.language.english": "English",
+        "settings.language.russian": "Русский",
+        "settings.language.spanish": "Español"
+    ]
+    
+    // MARK: - Russian Strings
+    private static let russianStrings: [String: String] = [
+        // Tab Bar
+        "tab.lists": "Списки",
+        "tab.history": "История",
+        "tab.awards": "Награды", 
+        "tab.settings": "Настройки",
+        
+        // Main Screen
+        "main.title": "Мои поездки",
+        "main.empty": "Поездок пока нет",
+        "main.empty.subtitle": "Создайте первую поездку, чтобы начать",
+        "main.create": "Создать поездку",
+        "main.archive": "Архив",
+        "main.delete": "Удалить",
+        "main.delete.confirm": "Удалить поездку",
+        "main.delete.message": "Вы уверены, что хотите удалить эту поездку? Это действие нельзя отменить.",
+        "main.delete.cancel": "Отмена",
+        "main.delete.delete": "Удалить",
+        
+        // Trip Card
+        "trip.progress": "Прогресс",
+        "trip.items": "предметов",
+        "trip.categories": "категории",
+        "trip.weight": "кг",
+        "trip.status.new": "Новая",
+        "trip.status.in_progress": "В процессе",
+        "trip.status.ready": "Готова",
+        
+        // New Trip Sheet
+        "new_trip.title": "Новая поездка",
+        "new_trip.cancel": "Отмена",
+        "new_trip.create": "Создать",
+        "new_trip.name": "Название поездки",
+        "new_trip.name.placeholder": "Например: Отпуск в Париже",
+        "new_trip.icon": "Выберите иконку",
+        "new_trip.dates": "Даты поездки",
+        "new_trip.start_date": "Дата начала",
+        "new_trip.end_date": "Дата окончания",
+        "new_trip.type": "Тип поездки",
+        "new_trip.type.leisure": "Отдых",
+        "new_trip.type.work": "Работа",
+        "new_trip.type.adventure": "Приключение",
+        "new_trip.type.family": "Семейная",
+        
+        // Trip Detail
+        "trip_detail.packing_progress": "Прогресс сборов",
+        "trip_detail.items_packed": "предметов собрано",
+        "trip_detail.all_items": "Все предметы",
+        "trip_detail.remaining": "Осталось",
+        "trip_detail.add_item": "Добавить предмет",
+        
+        // Add Item Sheet
+        "add_item.title": "Добавить предмет",
+        "add_item.cancel": "Отмена",
+        "add_item.add": "Добавить",
+        "add_item.quick_add": "Быстрое добавление",
+        "add_item.create_own": "Или создайте свой",
+        "add_item.name": "Название предмета",
+        "add_item.name.placeholder": "Например: Зубная щётка",
+        "add_item.category": "Категория",
+        "add_item.importance": "Важность",
+        "add_item.importance.low": "Низкая",
+        "add_item.importance.medium": "Средняя",
+        "add_item.importance.high": "Высокая",
+        "add_item.weight": "Вес и количество",
+        "add_item.weight.kg": "кг",
+        "add_item.note": "Заметка (необязательно)",
+        "add_item.note.placeholder": "Дополнительная информация или напоминание",
+        "add_item.quantity": "Количество",
+        
+        // Categories
+        "category.documents": "Документы",
+        "category.clothes": "Одежда",
+        "category.hygiene": "Гигиена",
+        "category.electronics": "Электроника",
+        "category.medication": "Медикаменты",
+        "category.other": "Разное",
+        
+        // History
+        "history.title": "История",
+        "history.subtitle": "Ваши завершённые поездки",
+        "history.stats.trips": "Поездки",
+        "history.stats.items": "Предметы",
+        "history.stats.awards": "Награды",
+        "history.empty": "История пуста",
+        "history.empty.subtitle": "Завершённые поездки появятся здесь",
+        "history.packed": "100% собрано",
+        
+        // Achievements
+        "achievements.title": "Достижения",
+        "achievements.subtitle": "Собрано X из Y наград",
+        "achievements.progress": "Прогресс",
+        "achievements.first_suitcase": "Первый чемодан",
+        "achievements.first_suitcase.desc": "Создайте свой первый список для поездки",
+        "achievements.nothing_forgotten": "Ничего не забыто",
+        "achievements.nothing_forgotten.desc": "Отметьте все предметы в одной поездке",
+        "achievements.light_backpack": "Лёгкий рюкзак",
+        "achievements.light_backpack.desc": "Создайте список с < 5 предметами",
+        "achievements.packed_house": "Весь дом в чемодане",
+        "achievements.packed_house.desc": "Создайте список с > 30 предметами",
+        "achievements.weekend_traveler": "Выходной путешественник",
+        "achievements.weekend_traveler.desc": "Завершите поездку на 1–2 дня",
+        "achievements.packing_master": "Мастер сборов",
+        "achievements.packing_master.desc": "Завершите 5 разных поездок",
+        "achievements.experienced_tourist": "Опытный турист",
+        "achievements.experienced_tourist.desc": "Завершите 10 разных поездок",
+        "achievements.baggage_organizer": "Организатор багажа",
+        "achievements.baggage_organizer.desc": "Добавьте заметки к 10 предметам",
+        "achievements.seasonal_traveler": "Сезонный путешественник",
+        "achievements.seasonal_traveler.desc": "Создайте списки для 4 сезонов",
+        "achievements.no_panic": "Без паники",
+        "achievements.no_panic.desc": "Завершите в день отъезда",
+        "achievements.under_control": "Всё под контролем",
+        "achievements.under_control.desc": "Завершите за неделю до отъезда",
+        "achievements.global_tourist": "Глобальный турист",
+        "achievements.global_tourist.desc": "Используйте приложение на двух языках",
+        "achievements.note_master": "Мастер заметок",
+        "achievements.note_master.desc": "Добавьте свою первую заметку",
+        "achievements.checklist_pro": "Профи чек-листов",
+        "achievements.checklist_pro.desc": "Создайте 20 списков для поездок",
+        "achievements.road_legend": "Легенда дорог",
+        "achievements.road_legend.desc": "Завершите 50 списков",
+        
+        // Settings
+        "settings.title": "Настройки",
+        "settings.subtitle": "Персонализация приложения",
+        "settings.profile": "Профиль",
+        "settings.appearance": "Внешний вид",
+        "settings.theme": "Тема",
+        "settings.theme.system": "Системная",
+        "settings.theme.light": "Светлая",
+        "settings.theme.dark": "Тёмная",
+        "settings.text_size": "Размер текста",
+        "settings.text_size.small": "Маленький",
+        "settings.text_size.medium": "Средний",
+        "settings.text_size.large": "Большой",
+        "settings.language": "Язык",
+        "settings.language.english": "English",
+        "settings.language.russian": "Русский",
+        "settings.language.spanish": "Español"
+    ]
+    
+    // MARK: - Spanish Strings
+    private static let spanishStrings: [String: String] = [
+        // Tab Bar
+        "tab.lists": "Listas",
+        "tab.history": "Historial",
+        "tab.awards": "Premios",
+        "tab.settings": "Configuración",
+        
+        // Main Screen
+        "main.title": "Mis Viajes",
+        "main.empty": "Aún no hay viajes",
+        "main.empty.subtitle": "Crea tu primer viaje para comenzar",
+        "main.create": "Crear Viaje",
+        "main.archive": "Archivar",
+        "main.delete": "Eliminar",
+        "main.delete.confirm": "Eliminar Viaje",
+        "main.delete.message": "¿Estás seguro de que quieres eliminar este viaje? Esta acción no se puede deshacer.",
+        "main.delete.cancel": "Cancelar",
+        "main.delete.delete": "Eliminar",
+        
+        // Trip Card
+        "trip.progress": "Progreso",
+        "trip.items": "artículos",
+        "trip.categories": "categorías",
+        "trip.weight": "kg",
+        "trip.status.new": "Nuevo",
+        "trip.status.in_progress": "En progreso",
+        "trip.status.ready": "Listo",
+        
+        // New Trip Sheet
+        "new_trip.title": "Nuevo Viaje",
+        "new_trip.cancel": "Cancelar",
+        "new_trip.create": "Crear",
+        "new_trip.name": "Nombre del Viaje",
+        "new_trip.name.placeholder": "Por ejemplo: Vacaciones en París",
+        "new_trip.icon": "Elegir Icono",
+        "new_trip.dates": "Fechas del Viaje",
+        "new_trip.start_date": "Fecha de inicio",
+        "new_trip.end_date": "Fecha de fin",
+        "new_trip.type": "Tipo de Viaje",
+        "new_trip.type.leisure": "Ocio",
+        "new_trip.type.work": "Trabajo",
+        "new_trip.type.adventure": "Aventura",
+        "new_trip.type.family": "Familiar",
+        
+        // Trip Detail
+        "trip_detail.packing_progress": "Progreso de Empaque",
+        "trip_detail.items_packed": "artículos empacados",
+        "trip_detail.all_items": "Todos los artículos",
+        "trip_detail.remaining": "Restantes",
+        "trip_detail.add_item": "Agregar artículo",
+        
+        // Add Item Sheet
+        "add_item.title": "Agregar Artículo",
+        "add_item.cancel": "Cancelar",
+        "add_item.add": "Agregar",
+        "add_item.quick_add": "Agregar rápido",
+        "add_item.create_own": "O crear el tuyo",
+        "add_item.name": "Nombre del Artículo",
+        "add_item.name.placeholder": "Por ejemplo: Cepillo de dientes",
+        "add_item.category": "Categoría",
+        "add_item.importance": "Importancia",
+        "add_item.importance.low": "Baja",
+        "add_item.importance.medium": "Media",
+        "add_item.importance.high": "Alta",
+        "add_item.weight": "Peso y cantidad",
+        "add_item.weight.kg": "kg",
+        "add_item.note": "Nota (opcional)",
+        "add_item.note.placeholder": "Información adicional o recordatorio",
+        "add_item.quantity": "Cantidad",
+        
+        // Categories
+        "category.documents": "Documentos",
+        "category.clothes": "Ropa",
+        "category.hygiene": "Higiene",
+        "category.electronics": "Electrónicos",
+        "category.medication": "Medicamentos",
+        "category.other": "Otros",
+        
+        // History
+        "history.title": "Historial",
+        "history.subtitle": "Tus viajes completados",
+        "history.stats.trips": "Viajes",
+        "history.stats.items": "Artículos",
+        "history.stats.awards": "Premios",
+        "history.empty": "Aún no hay historial",
+        "history.empty.subtitle": "Los viajes completados aparecerán aquí",
+        "history.packed": "100% empacado",
+        
+        // Achievements
+        "achievements.title": "Logros",
+        "achievements.subtitle": "Recolectados X de Y premios",
+        "achievements.progress": "Progreso",
+        "achievements.first_suitcase": "Primera Maleta",
+        "achievements.first_suitcase.desc": "Crea tu primera lista de viaje",
+        "achievements.nothing_forgotten": "Nada Olvidado",
+        "achievements.nothing_forgotten.desc": "Marca todos los artículos en un viaje",
+        "achievements.light_backpack": "Mochila Ligera",
+        "achievements.light_backpack.desc": "Crea una lista con < 5 artículos",
+        "achievements.packed_house": "Casa Empacada",
+        "achievements.packed_house.desc": "Crea una lista con > 30 artículos",
+        "achievements.weekend_traveler": "Viajero de Fin de Semana",
+        "achievements.weekend_traveler.desc": "Completa un viaje de 1–2 días",
+        "achievements.packing_master": "Maestro del Empaque",
+        "achievements.packing_master.desc": "Completa 5 viajes diferentes",
+        "achievements.experienced_tourist": "Turista Experimentado",
+        "achievements.experienced_tourist.desc": "Completa 10 viajes diferentes",
+        "achievements.baggage_organizer": "Organizador de Equipaje",
+        "achievements.baggage_organizer.desc": "Agrega notas a 10 artículos",
+        "achievements.seasonal_traveler": "Viajero Estacional",
+        "achievements.seasonal_traveler.desc": "Crea listas para 4 estaciones",
+        "achievements.no_panic": "Sin Pánico",
+        "achievements.no_panic.desc": "Completa el día de partida",
+        "achievements.under_control": "Todo Bajo Control",
+        "achievements.under_control.desc": "Completa una semana antes de partir",
+        "achievements.global_tourist": "Turista Global",
+        "achievements.global_tourist.desc": "Usa la app en dos idiomas",
+        "achievements.note_master": "Maestro de Notas",
+        "achievements.note_master.desc": "Agrega tu primera nota",
+        "achievements.checklist_pro": "Pro de Listas",
+        "achievements.checklist_pro.desc": "Crea 20 listas de viaje",
+        "achievements.road_legend": "Leyenda del Camino",
+        "achievements.road_legend.desc": "Completa 50 listas",
+        
+        // Settings
+        "settings.title": "Configuración",
+        "settings.subtitle": "Personalización de la app",
+        "settings.profile": "Perfil",
+        "settings.appearance": "Apariencia",
+        "settings.theme": "Tema",
+        "settings.theme.system": "Sistema",
+        "settings.theme.light": "Claro",
+        "settings.theme.dark": "Oscuro",
+        "settings.text_size": "Tamaño de Texto",
+        "settings.text_size.small": "Pequeño",
+        "settings.text_size.medium": "Mediano",
+        "settings.text_size.large": "Grande",
+        "settings.language": "Idioma",
+        "settings.language.english": "English",
+        "settings.language.russian": "Русский",
+        "settings.language.spanish": "Español"
+    ]
+}

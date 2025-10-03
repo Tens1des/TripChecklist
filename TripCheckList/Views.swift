@@ -13,12 +13,12 @@ struct TripsListView: View {
             VStack(spacing: 0) {
                 // Header
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("My trips")
+                    Text(LocalizedString.localized("main.title", language: appState.settings.language))
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(.primary)
                     
-                    Text("Everything for easy packing")
+                    Text(LocalizedString.localized("main.empty.subtitle", language: appState.settings.language))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -38,11 +38,11 @@ struct TripsListView: View {
                                 .foregroundStyle(.blue)
                         }
                         VStack(spacing: 8) {
-                            Text("No trips yet")
+                            Text(LocalizedString.localized("main.empty", language: appState.settings.language))
                                 .font(.title2)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.primary)
-                            Text("Create your first checklist")
+                            Text(LocalizedString.localized("main.empty.subtitle", language: appState.settings.language))
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -78,8 +78,8 @@ struct TripsListView: View {
             )
             .navigationBarHidden(true)
             .sheet(isPresented: $showingNewTrip) {
-                NewTripSheet { title, icon in
-                    let newTrip = Trip(title: title, iconName: icon)
+                NewTripSheet { title, icon, start, end in
+                    let newTrip = Trip(title: title, startDate: start, endDate: end, iconName: icon)
                     appState.trips.append(newTrip)
                 }
             }
@@ -315,12 +315,10 @@ struct TripCard: View {
     
     private func formatDateRange(_ start: Date, _ end: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ru_RU")
+        formatter.locale = Locale(identifier: "en_US")
         formatter.dateFormat = "d MMMM"
-        
         let startStr = formatter.string(from: start)
         let endStr = formatter.string(from: end)
-        
         return "\(startStr) - \(endStr)"
     }
 }
@@ -345,8 +343,9 @@ struct TripRow: View {
 }
 
 struct NewTripSheet: View {
-    var onCreate: (String, String?) -> Void
+    var onCreate: (String, String?, Date?, Date?) -> Void
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var appState: AppState
     @State private var title: String = ""
     @State private var selectedIcon: String = "airplane"
     @State private var startDate = Date()
@@ -360,16 +359,16 @@ struct NewTripSheet: View {
                 VStack(alignment: .leading, spacing: 24) {
                     // Header with gradient
                     HStack {
-                        Button("Cancel") { dismiss() }
+                        Button(LocalizedString.localized("new_trip.cancel", language: appState.settings.language)) { dismiss() }
                             .foregroundColor(.white)
                         Spacer()
-                        Text("New trip")
+                        Text(LocalizedString.localized("new_trip.title", language: appState.settings.language))
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
                         Spacer()
-                        Button("Create") {
-                            onCreate(title.isEmpty ? "New trip" : title, selectedIcon)
+                        Button(LocalizedString.localized("new_trip.create", language: appState.settings.language)) {
+                            onCreate(title.isEmpty ? LocalizedString.localized("new_trip.title", language: appState.settings.language) : title, selectedIcon, startDate, endDate)
                             dismiss()
                         }
                         .foregroundColor(.white)
@@ -388,17 +387,17 @@ struct NewTripSheet: View {
                     VStack(alignment: .leading, spacing: 20) {
                         // Trip Name
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Trip name")
+                            Text(LocalizedString.localized("new_trip.name", language: appState.settings.language))
                                 .font(.headline)
                                 .foregroundColor(.primary)
                             
-                            TextField("For example: Vacation in Paris", text: $title)
+                            TextField(LocalizedString.localized("new_trip.name.placeholder", language: appState.settings.language), text: $title)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                         }
                         
                         // Icon Selection
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Choose an icon")
+                            Text(LocalizedString.localized("new_trip.icon", language: appState.settings.language))
                                 .font(.headline)
                                 .foregroundColor(.primary)
                             
@@ -421,34 +420,32 @@ struct NewTripSheet: View {
                         
                         // Date Pickers
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Trip dates")
+                            Text(LocalizedString.localized("new_trip.dates", language: appState.settings.language))
                                 .font(.headline)
                                 .foregroundColor(.primary)
                             
                             HStack(spacing: 16) {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("Start date")
+                                    Text(LocalizedString.localized("new_trip.start_date", language: appState.settings.language))
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
-                                    
                                     DatePicker("", selection: $startDate, displayedComponents: .date)
-                                        .datePickerStyle(CompactDatePickerStyle())
+                                        .datePickerStyle(.compact)
                                 }
                                 
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("End date")
+                                    Text(LocalizedString.localized("new_trip.end_date", language: appState.settings.language))
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
-                                    
                                     DatePicker("", selection: $endDate, displayedComponents: .date)
-                                        .datePickerStyle(CompactDatePickerStyle())
+                                        .datePickerStyle(.compact)
                                 }
                             }
                         }
                         
                         // Trip Type
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Trip type")
+                            Text(LocalizedString.localized("new_trip.type", language: appState.settings.language))
                                 .font(.headline)
                                 .foregroundColor(.primary)
                             
@@ -456,7 +453,8 @@ struct NewTripSheet: View {
                                 ForEach(TripType.allCases, id: \.self) { type in
                                     TripTypeButton(
                                         type: type,
-                                        isSelected: selectedTripType == type
+                                        isSelected: selectedTripType == type,
+                                        language: appState.settings.language
                                     ) {
                                         selectedTripType = type
                                     }
@@ -464,33 +462,7 @@ struct NewTripSheet: View {
                             }
                         }
                         
-                        // Templates
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Use a template")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            
-                            VStack(spacing: 12) {
-                                ForEach(TripTemplate.allCases, id: \.self) { template in
-                                    TemplateCard(
-                                        template: template,
-                                        isSelected: selectedTemplate == template
-                                    ) {
-                                        selectedTemplate = template
-                                    }
-                                }
-                                
-                                Button {
-                                    selectedTemplate = nil
-                                } label: {
-                                    Text("Create from scratch")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding(.vertical, 8)
-                                }
-                            }
-                        }
+                        // (Templates removed per request)
                     }
                     .padding(.horizontal, 20)
                 }
@@ -512,12 +484,12 @@ enum TripType: String, CaseIterable {
     case adventure = "adventure"
     case family = "family"
     
-    var displayName: String {
+    func displayName(language: UserSettings.AppLanguage) -> String {
         switch self {
-        case .leisure: return "Leisure"
-        case .work: return "Work"
-        case .adventure: return "Adventure"
-        case .family: return "Family"
+        case .leisure: return LocalizedString.localized("new_trip.type.leisure", language: language)
+        case .work: return LocalizedString.localized("new_trip.type.work", language: language)
+        case .adventure: return LocalizedString.localized("new_trip.type.adventure", language: language)
+        case .family: return LocalizedString.localized("new_trip.type.family", language: language)
         }
     }
     
@@ -534,6 +506,7 @@ enum TripType: String, CaseIterable {
 struct TripTypeButton: View {
     let type: TripType
     let isSelected: Bool
+    let language: UserSettings.AppLanguage
     let action: () -> Void
     
     var body: some View {
@@ -543,7 +516,7 @@ struct TripTypeButton: View {
                     .font(.title3)
                     .foregroundColor(isSelected ? .white : .primary)
                 
-                Text(type.displayName)
+                Text(type.displayName(language: language))
                     .font(.caption)
                     .foregroundColor(isSelected ? .white : .primary)
             }
@@ -996,6 +969,7 @@ struct AddItemSheet: View {
     let categories: [TripCategory]
     var onAdd: (TripItem) -> Void
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var appState: AppState
 
     @State private var title: String = ""
     @State private var note: String = ""
@@ -1009,15 +983,15 @@ struct AddItemSheet: View {
             VStack(spacing: 0) {
                 // Header with gradient
                 HStack {
-                    Button("Cancel") { dismiss() }
+                    Button(LocalizedString.localized("add_item.cancel", language: appState.settings.language)) { dismiss() }
                         .foregroundColor(.white)
                     Spacer()
-                    Text("Add item")
+                    Text(LocalizedString.localized("add_item.title", language: appState.settings.language))
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                     Spacer()
-                    Button("Add") {
+                    Button(LocalizedString.localized("add_item.add", language: appState.settings.language)) {
                         let weight = Double(weightText.replacingOccurrences(of: ",", with: "."))
                         let item = TripItem(
                             title: title.isEmpty ? "Item" : title,
@@ -1050,7 +1024,7 @@ struct AddItemSheet: View {
                             HStack(spacing: 8) {
                                 Image(systemName: "sparkles")
                                     .foregroundColor(.blue)
-                                Text("Quick add")
+                                Text(LocalizedString.localized("add_item.quick_add", language: appState.settings.language))
                                     .font(.headline)
                             }
                             
@@ -1063,16 +1037,16 @@ struct AddItemSheet: View {
 
                         // Custom item fields
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Or create your own")
+                            Text(LocalizedString.localized("add_item.create_own", language: appState.settings.language))
                                 .font(.headline)
                             
-                            TextField("Item name", text: $title)
+                            TextField(LocalizedString.localized("add_item.name", language: appState.settings.language), text: $title)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                         }
 
                         // Category grid
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Category")
+                            Text(LocalizedString.localized("add_item.category", language: appState.settings.language))
                                 .font(.headline)
                             
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
@@ -1080,16 +1054,23 @@ struct AddItemSheet: View {
                                     Button {
                                         selectedCategory = cat
                                     } label: {
-                                        HStack(spacing: 8) {
+                                        VStack(spacing: 8) {
                                             Image(systemName: cat.iconName)
-                                            Text(cat.name)
+                                                .font(.title2)
+                                                .foregroundColor(colorForCategory(cat))
+                                            Text(cat.localizedName(language: appState.settings.language))
+                                                .font(.subheadline)
+                                                .foregroundColor(.primary)
                                         }
                                         .frame(maxWidth: .infinity)
-                                        .padding(12)
+                                        .padding(16)
                                         .background(
-                                            selectedCategory?.id == cat.id ? colorForCategory(cat) : Color(UIColor.secondarySystemBackground)
+                                            selectedCategory?.id == cat.id ? colorForCategory(cat).opacity(0.15) : Color(UIColor.secondarySystemBackground)
                                         )
-                                        .foregroundColor(selectedCategory?.id == cat.id ? .white : .primary)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(selectedCategory?.id == cat.id ? colorForCategory(cat) : Color.clear, lineWidth: 2)
+                                        )
                                         .clipShape(RoundedRectangle(cornerRadius: 10))
                                     }
                                 }
@@ -1098,18 +1079,18 @@ struct AddItemSheet: View {
 
                         // Importance
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Importance")
+                            Text(LocalizedString.localized("add_item.importance", language: appState.settings.language))
                                 .font(.headline)
-                            HStack {
-                                importanceChip(.low, title: "Low", tint: .gray)
-                                importanceChip(.medium, title: "Medium", tint: .orange)
-                                importanceChip(.high, title: "High", tint: .red)
+                            HStack(spacing: 12) {
+                                importanceChip(.low, title: LocalizedString.localized("add_item.importance.low", language: appState.settings.language), tint: .gray)
+                                importanceChip(.medium, title: LocalizedString.localized("add_item.importance.medium", language: appState.settings.language), tint: .orange)
+                                importanceChip(.high, title: LocalizedString.localized("add_item.importance.high", language: appState.settings.language), tint: .red)
                             }
                         }
 
                         // Weight and quantity
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Weight and quantity")
+                            Text(LocalizedString.localized("add_item.weight", language: appState.settings.language))
                                 .font(.headline)
                             HStack(spacing: 12) {
                                 HStack(spacing: 8) {
@@ -1121,7 +1102,7 @@ struct AddItemSheet: View {
                                 .padding(.vertical, 8)
                                 .background(Color(UIColor.secondarySystemBackground))
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
-                                Text("kg").foregroundColor(.secondary)
+                                Text(LocalizedString.localized("add_item.weight.kg", language: appState.settings.language)).foregroundColor(.secondary)
 
                                 Spacer()
 
@@ -1139,9 +1120,9 @@ struct AddItemSheet: View {
 
                         // Note
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Note (optional)")
+                            Text(LocalizedString.localized("add_item.note", language: appState.settings.language))
                                 .font(.headline)
-                            TextField("Additional info or reminder", text: $note)
+                            TextField(LocalizedString.localized("add_item.note.placeholder", language: appState.settings.language), text: $note)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                         }
                     }
@@ -1782,11 +1763,11 @@ struct SettingsView: View {
             VStack(spacing: 0) {
                 // Header
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Settings")
+                    Text(LocalizedString.localized("settings.title", language: appState.settings.language))
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(.primary)
-                    Text("App personalization")
+                    Text(LocalizedString.localized("settings.subtitle", language: appState.settings.language))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -1808,9 +1789,9 @@ struct SettingsView: View {
                                         .font(.title2)
                                 }
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Text("Profile")
+                                    Text(LocalizedString.localized("settings.profile", language: appState.settings.language))
                                         .font(.headline)
-                                    TextField("Enter name", text: Binding(get: { appState.settings.displayName }, set: { appState.settings.displayName = $0 }))
+                                    TextField(LocalizedString.localized("settings.profile", language: appState.settings.language), text: Binding(get: { appState.settings.displayName }, set: { appState.settings.displayName = $0 }))
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
                                 }
                             }
@@ -1846,15 +1827,15 @@ struct SettingsView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             HStack(spacing: 8) {
                                 Image(systemName: "paintbrush.fill").foregroundColor(.blue)
-                                Text("Appearance").font(.headline)
+                                Text(LocalizedString.localized("settings.appearance", language: appState.settings.language)).font(.headline)
                             }
                             
                             VStack(alignment: .leading, spacing: 12) {
-                                Text("Theme").font(.subheadline).foregroundColor(.secondary)
+                                Text(LocalizedString.localized("settings.theme", language: appState.settings.language)).font(.subheadline).foregroundColor(.secondary)
                                 Picker("Theme", selection: Binding(get: { appState.settings.theme }, set: { appState.settings.theme = $0 })) {
-                                    Text("System").tag(UserSettings.Theme.system)
-                                    Text("Light").tag(UserSettings.Theme.light)
-                                    Text("Dark").tag(UserSettings.Theme.dark)
+                                    Text(LocalizedString.localized("settings.theme.system", language: appState.settings.language)).tag(UserSettings.Theme.system)
+                                    Text(LocalizedString.localized("settings.theme.light", language: appState.settings.language)).tag(UserSettings.Theme.light)
+                                    Text(LocalizedString.localized("settings.theme.dark", language: appState.settings.language)).tag(UserSettings.Theme.dark)
                                 }
                                 .pickerStyle(SegmentedPickerStyle())
                                 
@@ -1865,17 +1846,17 @@ struct SettingsView: View {
                             }
 
                             VStack(alignment: .leading, spacing: 12) {
-                                Text("App language").font(.subheadline).foregroundColor(.secondary)
+                                Text(LocalizedString.localized("settings.language", language: appState.settings.language)).font(.subheadline).foregroundColor(.secondary)
                                 Picker("Language", selection: Binding(get: { appState.settings.language }, set: { appState.settings.language = $0 })) {
-                                    Text("English").tag(UserSettings.AppLanguage.english)
-                                    Text("Russian").tag(UserSettings.AppLanguage.russian)
-                                    Text("Spanish").tag(UserSettings.AppLanguage.spanish)
+                                    Text(LocalizedString.localized("settings.language.english", language: appState.settings.language)).tag(UserSettings.AppLanguage.english)
+                                    Text(LocalizedString.localized("settings.language.russian", language: appState.settings.language)).tag(UserSettings.AppLanguage.russian)
+                                    Text(LocalizedString.localized("settings.language.spanish", language: appState.settings.language)).tag(UserSettings.AppLanguage.spanish)
                                 }
                                 .pickerStyle(MenuPickerStyle())
                             }
 
                             VStack(alignment: .leading, spacing: 12) {
-                                Text("Text size").font(.subheadline).foregroundColor(.secondary)
+                                Text(LocalizedString.localized("settings.text_size", language: appState.settings.language)).font(.subheadline).foregroundColor(.secondary)
                                 HStack {
                                     Image(systemName: "textformat.size.smaller")
                                         .foregroundColor(.secondary)
