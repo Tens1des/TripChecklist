@@ -234,18 +234,11 @@ struct TripCard: View {
                         )
                         .frame(width: CGFloat(trip.completedItemCount) / CGFloat(max(trip.totalItemCount, 1)) * UIScreen.main.bounds.width * 0.7, height: 8)
                 }
-                
-                HStack(spacing: 20) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(progressColor)
-                            .font(.caption)
-                        Text("\(trip.completedItemCount)/\(trip.totalItemCount) items")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    if trip.totalWeightKg > 0 {
+
+                // Weight just under progress bar (main screen request)
+                if trip.totalWeightKg > 0 {
+                    HStack {
+                        Spacer()
                         HStack(spacing: 6) {
                             Image(systemName: "scalemass.fill")
                                 .foregroundColor(.orange)
@@ -256,9 +249,20 @@ struct TripCard: View {
                         }
                     }
                 }
+                
+                HStack(spacing: 20) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(progressColor)
+                            .font(.caption)
+                        Text("\(trip.completedItemCount)/\(trip.totalItemCount) items")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
             
-            // Details with enhanced styling
+            // Details with enhanced styling (no weight duplicate)
             HStack(spacing: 20) {
                 HStack(spacing: 6) {
                     Image(systemName: "folder.fill")
@@ -267,17 +271,6 @@ struct TripCard: View {
                     Text("\(trip.categoryCount) categories")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                }
-                
-                if trip.totalWeightKg > 0 {
-                    HStack(spacing: 6) {
-                        Image(systemName: "scalemass.fill")
-                            .foregroundColor(.orange)
-                            .font(.caption)
-                        Text(String(format: "%.1f kg total", trip.totalWeightKg))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
                 }
             }
         }
@@ -411,14 +404,15 @@ struct NewTripSheet: View {
                             
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 8), spacing: 12) {
                                 ForEach(iconOptions, id: \.self) { icon in
+                                    let tint = colorForTripIcon(icon)
                                     Button {
                                         selectedIcon = icon
                                     } label: {
                                         Image(systemName: icon)
                                             .font(.title2)
-                                            .foregroundColor(selectedIcon == icon ? .white : .primary)
+                                            .foregroundColor(selectedIcon == icon ? .white : tint)
                                             .frame(width: 40, height: 40)
-                                            .background(selectedIcon == icon ? Color.blue : Color(UIColor.secondarySystemBackground))
+                                            .background(selectedIcon == icon ? tint : tint.opacity(0.15))
                                             .clipShape(RoundedRectangle(cornerRadius: 8))
                                     }
                                 }
@@ -606,37 +600,47 @@ struct TemplateCard: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Image(systemName: template.iconName)
-                    .font(.title2)
-                    .foregroundColor(.white)
-                    .frame(width: 40, height: 40)
-                    .background(template.color)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.white.opacity(0.2))
+                        .frame(width: 44, height: 44)
+                    Image(systemName: template.iconName)
+                        .font(.title2)
+                        .foregroundColor(.white)
+                }
                 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(template.displayName)
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.white)
                     
                     Text(template.description)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.white.opacity(0.9))
                 }
                 
                 Spacer()
                 
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.15), radius: 2, x: 0, y: 1)
                 }
             }
             .padding(16)
-            .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
+            .background(
+                LinearGradient(
+                    colors: [template.color, template.color.opacity(0.7)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             )
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? Color.white.opacity(0.9) : Color.white.opacity(0.0), lineWidth: 2)
+            )
+            .shadow(color: template.color.opacity(0.25), radius: 8, x: 0, y: 3)
         }
     }
 }
@@ -767,19 +771,23 @@ struct TripDetailView: View {
                             // Category Header
                             HStack {
                                 Image(systemName: category.iconName)
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(colorForCategory(category))
                                     .font(.title3)
-                                
                                 Text(category.name)
                                     .font(.headline)
-                                    .foregroundColor(.primary)
-                                
                                 Spacer()
-                                
                                 Text("(\(items.filter { $0.isChecked }.count)/\(items.count))")
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                             }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(colorForCategory(category).opacity(0.08))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(colorForCategory(category).opacity(0.15), lineWidth: 1)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                             .padding(.horizontal, 20)
                             
                             // Items
@@ -820,7 +828,9 @@ struct TripDetailView: View {
                 .foregroundColor(.white)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
-                .background(Color.blue)
+                .background(
+                    LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
+                )
                 .clipShape(RoundedRectangle(cornerRadius: 25))
                 .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
             }
@@ -1036,14 +1046,18 @@ struct AddItemSheet: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         // Quick Add (examples)
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Quick add")
-                                .font(.headline)
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "sparkles")
+                                    .foregroundColor(.blue)
+                                Text("Quick add")
+                                    .font(.headline)
+                            }
                             
-                            LazyVStack(spacing: 8) {
-                                quickAddButton(title: "Phone charger")
-                                quickAddButton(title: "T-Shirts")
-                                quickAddButton(title: "Sunscreen")
+                            LazyVStack(spacing: 10) {
+                                quickAddButton(title: "Phone charger", icon: "bolt.fill", tint: .yellow)
+                                quickAddButton(title: "T-Shirts", icon: "tshirt.fill", tint: .green)
+                                quickAddButton(title: "Sunscreen", icon: "sun.max.fill", tint: .orange)
                             }
                         }
 
@@ -1072,7 +1086,9 @@ struct AddItemSheet: View {
                                         }
                                         .frame(maxWidth: .infinity)
                                         .padding(12)
-                                        .background((selectedCategory?.id == cat.id ? Color.blue : Color.gray.opacity(0.1)))
+                                        .background(
+                                            selectedCategory?.id == cat.id ? colorForCategory(cat) : Color(UIColor.secondarySystemBackground)
+                                        )
                                         .foregroundColor(selectedCategory?.id == cat.id ? .white : .primary)
                                         .clipShape(RoundedRectangle(cornerRadius: 10))
                                     }
@@ -1085,9 +1101,9 @@ struct AddItemSheet: View {
                             Text("Importance")
                                 .font(.headline)
                             HStack {
-                                importanceChip(.low, title: "Low")
-                                importanceChip(.medium, title: "Medium")
-                                importanceChip(.high, title: "High")
+                                importanceChip(.low, title: "Low", tint: .gray)
+                                importanceChip(.medium, title: "Medium", tint: .orange)
+                                importanceChip(.high, title: "High", tint: .red)
                             }
                         }
 
@@ -1096,19 +1112,27 @@ struct AddItemSheet: View {
                             Text("Weight and quantity")
                                 .font(.headline)
                             HStack(spacing: 12) {
-                                TextField("0.5", text: $weightText)
-                                    .keyboardType(.decimalPad)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .frame(maxWidth: 120)
-                                Text("kg")
-                                    .foregroundColor(.secondary)
+                                HStack(spacing: 8) {
+                                    Image(systemName: "scalemass.fill").foregroundColor(.orange)
+                                    TextField("0.5", text: $weightText)
+                                        .keyboardType(.decimalPad)
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(Color(UIColor.secondarySystemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                Text("kg").foregroundColor(.secondary)
 
                                 Spacer()
 
                                 HStack(spacing: 12) {
-                                    Button { quantity = max(1, quantity - 1) } label: { Image(systemName: "minus.circle") }
-                                    Text("\(quantity)").frame(minWidth: 20)
-                                    Button { quantity += 1 } label: { Image(systemName: "plus.circle") }
+                                    Button { quantity = max(1, quantity - 1) } label: {
+                                        Image(systemName: "minus.circle.fill").foregroundColor(.red)
+                                    }
+                                    Text("\(quantity)").frame(minWidth: 24)
+                                    Button { quantity += 1 } label: {
+                                        Image(systemName: "plus.circle.fill").foregroundColor(.green)
+                                    }
                                 }
                             }
                         }
@@ -1129,28 +1153,34 @@ struct AddItemSheet: View {
         }
     }
 
-    private func quickAddButton(title: String) -> some View {
+    private func quickAddButton(title: String, icon: String, tint: Color) -> some View {
         Button {
             self.title = title
         } label: {
-            HStack {
+            HStack(spacing: 10) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8).fill(tint.opacity(0.15)).frame(width: 32, height: 32)
+                    Image(systemName: icon).foregroundColor(tint)
+                }
                 Text(title)
                 Spacer()
-                Image(systemName: "plus")
+                Image(systemName: "plus").foregroundColor(tint)
             }
             .padding(12)
-            .background(Color.gray.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(tint.opacity(0.3), lineWidth: 1)
+            )
         }
     }
 
-    private func importanceChip(_ value: TripItem.Importance, title: String) -> some View {
+    private func importanceChip(_ value: TripItem.Importance, title: String, tint: Color = .blue) -> some View {
         Button { importance = value } label: {
             Text(title)
                 .font(.subheadline)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(importance == value ? Color.blue : Color.gray.opacity(0.1))
+                .background(importance == value ? tint : Color(UIColor.secondarySystemBackground))
                 .foregroundColor(importance == value ? .white : .primary)
                 .clipShape(Capsule())
         }
@@ -1316,6 +1346,7 @@ struct HistoryView: View {
                                 .font(.caption)
                                 .foregroundColor(.white.opacity(0.8))
                         }
+                        .frame(maxWidth: .infinity, alignment: .center)
                         
                         VStack(spacing: 4) {
                             Text("\(appState.trips.filter { $0.isArchived }.reduce(0) { $0 + $1.totalItemCount })")
@@ -1326,6 +1357,7 @@ struct HistoryView: View {
                                 .font(.caption)
                                 .foregroundColor(.white.opacity(0.8))
                         }
+                        .frame(maxWidth: .infinity, alignment: .center)
                         
                         VStack(spacing: 4) {
                             Text("\(appState.trips.filter { $0.isArchived }.count)")
@@ -1336,6 +1368,7 @@ struct HistoryView: View {
                                 .font(.caption)
                                 .foregroundColor(.white.opacity(0.8))
                         }
+                        .frame(maxWidth: .infinity, alignment: .center)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -1911,6 +1944,40 @@ private struct ThemePreview: View {
         }
         .preferredColorScheme(theme == .light ? .light : (theme == .dark ? .dark : nil))
     }
+}
+
+private func colorForCategory(_ category: TripCategory) -> Color {
+    switch category.name.lowercased() {
+    case let n where n.contains("document"):
+        return .blue
+    case let n where n.contains("clothes"):
+        return .green
+    case let n where n.contains("hygiene"):
+        return .orange
+    case let n where n.contains("electronic"):
+        return .purple
+    case let n where n.contains("medic"):
+        return .red
+    case let n where n.contains("other") || n.contains("misc"):
+        return .gray
+    default:
+        return .blue
+    }
+}
+
+private func colorForTripIcon(_ name: String) -> Color {
+    if name.contains("airplane") { return .blue }
+    if name.contains("car") { return .orange }
+    if name.contains("suitcase") { return .purple }
+    if name.contains("palm") || name.contains("leaf") { return .green }
+    if name.contains("mountain") { return .indigo }
+    if name.contains("camera") { return .pink }
+    if name.contains("train") || name.contains("tram") { return .teal }
+    if name.contains("bus") { return .yellow }
+    if name.contains("bicycle") { return .mint }
+    if name.contains("tent") { return .brown }
+    if name.contains("house") || name.contains("building") { return .gray }
+    return .blue
 }
 
 
