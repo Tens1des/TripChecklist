@@ -460,6 +460,8 @@ struct NewTripSheet: View {
                                     }
                                 }
                             }
+                            .frame(maxWidth: .infinity)
+                            .multilineTextAlignment(.center)
                         }
                         
                         // (Templates removed per request)
@@ -1090,16 +1092,15 @@ struct AddItemSheet: View {
                                 importanceChip(.medium, title: LocalizedString.localized("add_item.importance.medium", language: appState.settings.language), tint: .orange)
                                 importanceChip(.high, title: LocalizedString.localized("add_item.importance.high", language: appState.settings.language), tint: .red)
                             }
+                            .frame(maxWidth: .infinity)
+                            .multilineTextAlignment(.center)
                         }
 
-                        // Weight and quantity
+                        // Weight
                         VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 8) {
-                                Image(systemName: "scalemass.fill")
-                                    .foregroundColor(.blue)
-                                Text(LocalizedString.localized("add_item.weight", language: appState.settings.language))
-                                    .font(.headline)
-                            }
+                            Text(LocalizedString.localized("add_item.weight", language: appState.settings.language))
+                                .font(.headline)
+                            
                             HStack(spacing: 12) {
                                 HStack(spacing: 8) {
                                     Image(systemName: "scalemass.fill").foregroundColor(.orange)
@@ -1110,20 +1111,75 @@ struct AddItemSheet: View {
                                 .padding(.vertical, 8)
                                 .background(Color(UIColor.secondarySystemBackground))
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
-                                Text(LocalizedString.localized("add_item.weight.kg", language: appState.settings.language)).foregroundColor(.secondary)
-
+                                Text(LocalizedString.localized("add_item.weight.kg", language: appState.settings.language))
+                                    .foregroundColor(.secondary)
+                                
                                 Spacer()
-
-                                HStack(spacing: 12) {
-                                    Button { quantity = max(1, quantity - 1) } label: {
-                                        Image(systemName: "minus.circle.fill").foregroundColor(.red)
+                                
+                                // Quick weight buttons
+                                HStack(spacing: 8) {
+                                    Button { weightText = "0.1" } label: {
+                                        Text(LocalizedString.localized("add_item.weight.light", language: appState.settings.language))
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.gray.opacity(0.1))
+                                            .clipShape(RoundedRectangle(cornerRadius: 6))
                                     }
-                                    Text("\(quantity)").frame(minWidth: 24)
-                                    Button { quantity += 1 } label: {
-                                        Image(systemName: "plus.circle.fill").foregroundColor(.green)
+                                    Button { weightText = "0.5" } label: {
+                                        Text(LocalizedString.localized("add_item.weight.medium", language: appState.settings.language))
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.gray.opacity(0.1))
+                                            .clipShape(RoundedRectangle(cornerRadius: 6))
                                     }
                                 }
                             }
+                        }
+                        
+                        // Quantity
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(LocalizedString.localized("add_item.quantity", language: appState.settings.language))
+                                .font(.headline)
+                            
+                            HStack(spacing: 0) {
+                                // Minus button
+                                Button { quantity = max(1, quantity - 1) } label: {
+                                    Text("-")
+                                        .font(.title2)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.primary)
+                                        .frame(maxWidth: .infinity, minHeight: 44)
+                                        .background(Color(UIColor.secondarySystemBackground))
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                }
+                                
+                                // Quantity display
+                                Text("\(quantity)")
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.primary)
+                                    .frame(maxWidth: .infinity, minHeight: 44)
+                                    .background(Color.white)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color(UIColor.separator), lineWidth: 0.5)
+                                    )
+                                
+                                // Plus button
+                                Button { quantity += 1 } label: {
+                                    Text("+")
+                                        .font(.title2)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.primary)
+                                        .frame(maxWidth: .infinity, minHeight: 44)
+                                        .background(Color(UIColor.secondarySystemBackground))
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
                         }
 
                         // Note
