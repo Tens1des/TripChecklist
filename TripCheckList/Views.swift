@@ -449,7 +449,7 @@ struct NewTripSheet: View {
                                 .font(.headline)
                                 .foregroundColor(.primary)
                             
-                            HStack(spacing: 12) {
+                            HStack(spacing: 16) {
                                 ForEach(TripType.allCases, id: \.self) { type in
                                     TripTypeButton(
                                         type: type,
@@ -511,16 +511,17 @@ struct TripTypeButton: View {
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
+            VStack(spacing: 8) {
                 Image(systemName: type.iconName)
-                    .font(.title3)
+                    .font(.title2)
                     .foregroundColor(isSelected ? .white : .primary)
                 
                 Text(type.displayName(language: language))
                     .font(.caption)
+                    .fontWeight(.medium)
                     .foregroundColor(isSelected ? .white : .primary)
             }
-            .frame(width: 60, height: 50)
+            .frame(width: 70, height: 60)
             .background(isSelected ? Color.blue : Color.gray.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
@@ -823,7 +824,7 @@ struct TripDetailView: View {
             }
         }
         .sheet(isPresented: $showAddItem) {
-            AddItemSheet(categories: appState.categories) { newItem in
+            AddItemSheet { newItem in
                 updateTrip { $0.items.append(newItem) }
             }
         }
@@ -966,7 +967,6 @@ struct ItemRow: View {
 }
 
 struct AddItemSheet: View {
-    let categories: [TripCategory]
     var onAdd: (TripItem) -> Void
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var appState: AppState
@@ -977,6 +977,7 @@ struct AddItemSheet: View {
     @State private var importance: TripItem.Importance = .medium
     @State private var weightText: String = ""
     @State private var quantity: Int = 1
+    @State private var showingAddCategory: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -1044,36 +1045,39 @@ struct AddItemSheet: View {
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                         }
 
-                        // Category grid
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(LocalizedString.localized("add_item.category", language: appState.settings.language))
-                                .font(.headline)
+                        // Category horizontal scroll
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Text(LocalizedString.localized("add_item.category", language: appState.settings.language))
+                                    .font(.headline)
+                                Spacer()
+                                Button(action: { showingAddCategory = true }) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundColor(.blue)
+                                        .font(.title3)
+                                }
+                            }
                             
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
-                                ForEach(categories) { cat in
-                                    Button {
-                                        selectedCategory = cat
-                                    } label: {
-                                        VStack(spacing: 8) {
-                                            Image(systemName: cat.iconName)
-                                                .font(.title2)
-                                                .foregroundColor(colorForCategory(cat))
-                                            Text(cat.localizedName(language: appState.settings.language))
-                                                .font(.subheadline)
-                                                .foregroundColor(.primary)
-                                        }
-                                        .frame(maxWidth: .infinity)
-                                        .padding(16)
-                                        .background(
-                                            selectedCategory?.id == cat.id ? colorForCategory(cat).opacity(0.15) : Color(UIColor.secondarySystemBackground)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    ForEach(appState.categories) { cat in
+                                        CategoryChip(
+                                            category: cat,
+                                            isSelected: selectedCategory?.id == cat.id,
+                                            language: appState.settings.language,
+                                            onSelect: { selectedCategory = cat },
+                                            onDelete: cat.system ? nil : {
+                                                if let idx = appState.categories.firstIndex(where: { $0.id == cat.id }) {
+                                                    appState.categories.remove(at: idx)
+                                                    if selectedCategory?.id == cat.id {
+                                                        selectedCategory = nil
+                                                    }
+                                                }
+                                            }
                                         )
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(selectedCategory?.id == cat.id ? colorForCategory(cat) : Color.clear, lineWidth: 2)
-                                        )
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
                                     }
                                 }
+                                .padding(.horizontal, 2)
                             }
                         }
 
@@ -1081,7 +1085,7 @@ struct AddItemSheet: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(LocalizedString.localized("add_item.importance", language: appState.settings.language))
                                 .font(.headline)
-                            HStack(spacing: 12) {
+                            HStack(spacing: 16) {
                                 importanceChip(.low, title: LocalizedString.localized("add_item.importance.low", language: appState.settings.language), tint: .gray)
                                 importanceChip(.medium, title: LocalizedString.localized("add_item.importance.medium", language: appState.settings.language), tint: .orange)
                                 importanceChip(.high, title: LocalizedString.localized("add_item.importance.high", language: appState.settings.language), tint: .red)
@@ -1090,8 +1094,12 @@ struct AddItemSheet: View {
 
                         // Weight and quantity
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(LocalizedString.localized("add_item.weight", language: appState.settings.language))
-                                .font(.headline)
+                            HStack(spacing: 8) {
+                                Image(systemName: "scalemass.fill")
+                                    .foregroundColor(.blue)
+                                Text(LocalizedString.localized("add_item.weight", language: appState.settings.language))
+                                    .font(.headline)
+                            }
                             HStack(spacing: 12) {
                                 HStack(spacing: 8) {
                                     Image(systemName: "scalemass.fill").foregroundColor(.orange)
@@ -1132,6 +1140,12 @@ struct AddItemSheet: View {
             }
             .navigationBarHidden(true)
         }
+        .sheet(isPresented: $showingAddCategory) {
+            AddCategorySheet { newCat in
+                appState.addCustomCategory(newCat)
+            }
+            .environmentObject(appState)
+        }
     }
 
     private func quickAddButton(title: String, icon: String, tint: Color) -> some View {
@@ -1157,13 +1171,18 @@ struct AddItemSheet: View {
 
     private func importanceChip(_ value: TripItem.Importance, title: String, tint: Color = .blue) -> some View {
         Button { importance = value } label: {
-            Text(title)
-                .font(.subheadline)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(importance == value ? tint : Color(UIColor.secondarySystemBackground))
-                .foregroundColor(importance == value ? .white : .primary)
-                .clipShape(Capsule())
+            HStack(spacing: 6) {
+                Image(systemName: "circle.fill")
+                    .font(.caption)
+                    .foregroundColor(importance == value ? .white : tint)
+                Text(title)
+                    .font(.subheadline)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(importance == value ? tint : Color(UIColor.secondarySystemBackground))
+            .foregroundColor(importance == value ? .white : .primary)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
     }
 }
@@ -1232,6 +1251,55 @@ struct EditItemSheet: View {
     }
 }
 
+struct CategoryChip: View {
+    let category: TripCategory
+    let isSelected: Bool
+    let language: UserSettings.AppLanguage
+    let onSelect: () -> Void
+    let onDelete: (() -> Void)?
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            // Main button
+            Button(action: onSelect) {
+                HStack(spacing: 8) {
+                    Image(systemName: category.iconName)
+                        .font(.title3)
+                        .foregroundColor(isSelected ? .white : colorForCategory(category))
+                    
+                    Text(category.localizedName(language: language))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(isSelected ? .white : .primary)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .background(
+                    isSelected ? colorForCategory(category) : Color(UIColor.secondarySystemBackground)
+                )
+            }
+            
+            // Delete button (separate)
+            if let onDelete = onDelete {
+                Button(action: onDelete) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.body)
+                        .foregroundColor(isSelected ? .white.opacity(0.8) : .gray)
+                        .padding(.trailing, 8)
+                }
+                .background(
+                    isSelected ? colorForCategory(category) : Color(UIColor.secondarySystemBackground)
+                )
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(isSelected ? colorForCategory(category) : Color.clear, lineWidth: 2)
+        )
+    }
+}
+
 struct CategoryManagerView: View {
     let categories: [TripCategory]
     var onAdd: (TripCategory) -> Void
@@ -1263,9 +1331,8 @@ struct CategoryManagerView: View {
                 }
             }
             .sheet(isPresented: $showingAddCategory) {
-                AddCategorySheet { name in
-                    let newCategory = TripCategory(name: name, system: false, iconName: "folder")
-                    onAdd(newCategory)
+                AddCategorySheet { newCat in
+                    onAdd(newCat)
                 }
             }
         }
@@ -1273,25 +1340,89 @@ struct CategoryManagerView: View {
 }
 
 struct AddCategorySheet: View {
-    var onAdd: (String) -> Void
+    var onAdd: (TripCategory) -> Void
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var appState: AppState
     @State private var name: String = ""
+    @State private var selectedIcon: String = "folder"
+    
+    private let availableIcons = [
+        "folder", "star", "heart", "flag", "bookmark", "tag",
+        "paperclip", "link", "cart", "bag", "gift", "crown",
+        "bell", "flame", "leaf", "drop", "snowflake", "sun.max"
+    ]
 
     var body: some View {
         NavigationStack {
-            Form {
-                TextField("Category name", text: $name)
-            }
-            .navigationTitle("Add Category")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
-                        onAdd(name.isEmpty ? "New Category" : name)
+            VStack(spacing: 0) {
+                // Header with gradient
+                HStack {
+                    Button(LocalizedString.localized("add_item.cancel", language: appState.settings.language)) { dismiss() }
+                        .foregroundColor(.white)
+                    Spacer()
+                    Text(LocalizedString.localized("category.add_new", language: appState.settings.language))
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                    Spacer()
+                    Button(LocalizedString.localized("category.add", language: appState.settings.language)) {
+                        let newCategory = TripCategory(name: name.isEmpty ? "New Category" : name, system: false, iconName: selectedIcon)
+                        onAdd(newCategory)
                         dismiss()
-                    }.disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                    .foregroundColor(.white)
+                    .fontWeight(.semibold)
+                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 14)
+                .background(
+                    LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
+                )
+                .clipShape(
+                    .rect(topLeadingRadius: 0, bottomLeadingRadius: 16, bottomTrailingRadius: 16, topTrailingRadius: 0)
+                )
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        // Name
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(LocalizedString.localized("category.name", language: appState.settings.language))
+                                .font(.headline)
+                            TextField(LocalizedString.localized("category.name.placeholder", language: appState.settings.language), text: $name)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                        }
+                        
+                        // Icon selection
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(LocalizedString.localized("category.icon", language: appState.settings.language))
+                                .font(.headline)
+                            
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
+                                ForEach(availableIcons, id: \.self) { icon in
+                                    Button {
+                                        selectedIcon = icon
+                                    } label: {
+                                        Image(systemName: icon)
+                                            .font(.title2)
+                                            .foregroundColor(selectedIcon == icon ? .white : .blue)
+                                            .frame(width: 50, height: 50)
+                                            .background(selectedIcon == icon ? Color.blue : Color(UIColor.secondarySystemBackground))
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(selectedIcon == icon ? Color.blue : Color.clear, lineWidth: 2)
+                                            )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
                 }
             }
+            .navigationBarHidden(true)
         }
     }
 }
@@ -1933,12 +2064,10 @@ private func colorForCategory(_ category: TripCategory) -> Color {
         return .blue
     case let n where n.contains("clothes"):
         return .green
-    case let n where n.contains("hygiene"):
-        return .orange
-    case let n where n.contains("electronic"):
-        return .purple
     case let n where n.contains("medic"):
         return .red
+    case let n where n.contains("electronic"):
+        return .purple
     case let n where n.contains("other") || n.contains("misc"):
         return .gray
     default:

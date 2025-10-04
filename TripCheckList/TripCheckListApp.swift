@@ -27,6 +27,9 @@ struct TripCheckListApp: App {
                 .onChange(of: appState.settings) { _ in
                     StorageService.shared.save(appState)
                 }
+                .onChange(of: appState.categories) { _ in
+                    StorageService.shared.save(appState)
+                }
                 .onAppear {
                     achievementService.checkAchievements(for: appState)
                 }

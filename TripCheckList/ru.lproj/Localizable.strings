@@ -50,7 +50,7 @@
 // MARK: - Categories
 "Documents" = "Документы";
 "Clothes" = "Одежда";
-"Hygiene" = "Гигиена";
+//"Hygiene" = "Гигиена";
 "Electronics" = "Электроника";
 
 // MARK: - History

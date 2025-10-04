@@ -90,10 +90,14 @@ struct LocalizedStrings {
         // Categories
         "category.documents": "Documents",
         "category.clothes": "Clothes",
-        "category.hygiene": "Hygiene",
         "category.electronics": "Electronics",
         "category.medication": "Medication",
         "category.other": "Other",
+        "category.add_new": "Add Category",
+        "category.add": "Add",
+        "category.name": "Category Name",
+        "category.name.placeholder": "For example: Sports",
+        "category.icon": "Choose Icon",
         
         // History
         "history.title": "History",
@@ -233,10 +237,14 @@ struct LocalizedStrings {
         // Categories
         "category.documents": "Документы",
         "category.clothes": "Одежда",
-        "category.hygiene": "Гигиена",
         "category.electronics": "Электроника",
         "category.medication": "Медикаменты",
         "category.other": "Разное",
+        "category.add_new": "Добавить категорию",
+        "category.add": "Добавить",
+        "category.name": "Название категории",
+        "category.name.placeholder": "Например: Спорт",
+        "category.icon": "Выберите иконку",
         
         // History
         "history.title": "История",
@@ -376,7 +384,6 @@ struct LocalizedStrings {
         // Categories
         "category.documents": "Documentos",
         "category.clothes": "Ropa",
-        "category.hygiene": "Higiene",
         "category.electronics": "Electrónicos",
         "category.medication": "Medicamentos",
         "category.other": "Otros",

@@ -135,16 +135,13 @@ struct TripCategory: Identifiable, Codable, Equatable, Hashable {
 
     static let documents = TripCategory(name: "Documents", system: true, iconName: "doc.text")
     static let clothes = TripCategory(name: "Clothes", system: true, iconName: "tshirt")
-    static let hygiene = TripCategory(name: "Hygiene", system: true, iconName: "sparkles")
     static let electronics = TripCategory(name: "Electronics", system: true, iconName: "bolt")
     
     func localizedName(language: UserSettings.AppLanguage) -> String {
         switch self.name {
         case "Documents": return LocalizedString.localized("category.documents", language: language)
         case "Clothes": return LocalizedString.localized("category.clothes", language: language)
-        case "Hygiene": return LocalizedString.localized("category.hygiene", language: language)
         case "Electronics": return LocalizedString.localized("category.electronics", language: language)
-        case "Medication": return LocalizedString.localized("category.medication", language: language)
         case "Other": return LocalizedString.localized("category.other", language: language)
         default: return self.name
         }
@@ -196,12 +193,24 @@ final class AppState: ObservableObject {
     init(
         trips: [Trip] = [],
         categories: [TripCategory] = [
-            .documents, .clothes, .hygiene, .electronics
+            .documents, .clothes, .electronics
         ],
         settings: UserSettings = .default
     ) {
         self.trips = trips
-        self.categories = categories
+        // Filter out old categories that no longer exist
+        let validCategories = categories.filter { category in
+            category.name != "Hygiene" && category.name != "Medication"
+        }
+        // Ensure we have the required system categories
+        var finalCategories = validCategories
+        let systemCategories: [TripCategory] = [.documents, .clothes, .electronics]
+        for systemCat in systemCategories {
+            if !finalCategories.contains(where: { $0.name == systemCat.name }) {
+                finalCategories.append(systemCat)
+            }
+        }
+        self.categories = finalCategories
         self.settings = settings
     }
     
