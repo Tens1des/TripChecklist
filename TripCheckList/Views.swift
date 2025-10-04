@@ -356,7 +356,7 @@ struct NewTripSheet: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 32) {
                     // Header with gradient
                     HStack {
                         Button(LocalizedString.localized("new_trip.cancel", language: appState.settings.language)) { dismiss() }
@@ -367,13 +367,9 @@ struct NewTripSheet: View {
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
                         Spacer()
-                        Button(LocalizedString.localized("new_trip.create", language: appState.settings.language)) {
-                            onCreate(title.isEmpty ? LocalizedString.localized("new_trip.title", language: appState.settings.language) : title, selectedIcon, startDate, endDate)
-                            dismiss()
-                        }
-                        .foregroundColor(.white)
-                        .fontWeight(.semibold)
-                        .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        // Empty space to balance the layout
+                        Text("")
+                            .frame(width: 60)
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 14)
@@ -384,9 +380,9 @@ struct NewTripSheet: View {
                         .rect(topLeadingRadius: 0, bottomLeadingRadius: 16, bottomTrailingRadius: 16, topTrailingRadius: 0)
                     )
                     
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 28) {
                         // Trip Name
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 12) {
                             Text(LocalizedString.localized("new_trip.name", language: appState.settings.language))
                                 .font(.headline)
                                 .foregroundColor(.primary)
@@ -396,7 +392,7 @@ struct NewTripSheet: View {
                         }
                         
                         // Icon Selection
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 12) {
                             Text(LocalizedString.localized("new_trip.icon", language: appState.settings.language))
                                 .font(.headline)
                                 .foregroundColor(.primary)
@@ -419,7 +415,7 @@ struct NewTripSheet: View {
                         }
                         
                         // Date Pickers
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 12) {
                             Text(LocalizedString.localized("new_trip.dates", language: appState.settings.language))
                                 .font(.headline)
                                 .foregroundColor(.primary)
@@ -467,6 +463,29 @@ struct NewTripSheet: View {
                         // (Templates removed per request)
                     }
                     .padding(.horizontal, 20)
+                    .padding(.bottom, 40)
+                }
+                
+                // Save button at bottom
+                VStack {
+                    Button {
+                        onCreate(title.isEmpty ? LocalizedString.localized("new_trip.title", language: appState.settings.language) : title, selectedIcon, startDate, endDate)
+                        dismiss()
+                    } label: {
+                        Text(LocalizedString.localized("new_trip.create", language: appState.settings.language))
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(
+                                LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 20)
                 }
             }
             .navigationBarHidden(true)
@@ -1147,20 +1166,20 @@ struct AddItemSheet: View {
                                 // Minus button
                                 Button { quantity = max(1, quantity - 1) } label: {
                                     Text("-")
-                                        .font(.title2)
-                                        .fontWeight(.medium)
+                                        .font(.title)
+                                        .fontWeight(.semibold)
                                         .foregroundColor(.primary)
-                                        .frame(maxWidth: .infinity, minHeight: 44)
+                                        .frame(width: 60, height: 50)
                                         .background(Color(UIColor.secondarySystemBackground))
                                         .clipShape(RoundedRectangle(cornerRadius: 8))
                                 }
                                 
                                 // Quantity display
                                 Text("\(quantity)")
-                                    .font(.title2)
-                                    .fontWeight(.semibold)
+                                    .font(.title)
+                                    .fontWeight(.bold)
                                     .foregroundColor(.primary)
-                                    .frame(maxWidth: .infinity, minHeight: 44)
+                                    .frame(maxWidth: .infinity, minHeight: 50)
                                     .background(Color.white)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                     .overlay(
@@ -1171,10 +1190,10 @@ struct AddItemSheet: View {
                                 // Plus button
                                 Button { quantity += 1 } label: {
                                     Text("+")
-                                        .font(.title2)
-                                        .fontWeight(.medium)
+                                        .font(.title)
+                                        .fontWeight(.semibold)
                                         .foregroundColor(.primary)
-                                        .frame(maxWidth: .infinity, minHeight: 44)
+                                        .frame(width: 60, height: 50)
                                         .background(Color(UIColor.secondarySystemBackground))
                                         .clipShape(RoundedRectangle(cornerRadius: 8))
                                 }
